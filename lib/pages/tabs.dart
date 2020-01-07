@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'tabs/home.dart';
 import 'tabs/mine.dart';
 import 'tabs/search.dart';
+
 class MyPage extends StatefulWidget{
   @override
   _MyPageState createState()=>_MyPageState();
@@ -11,8 +12,16 @@ class MyPage extends StatefulWidget{
 class _MyPageState extends State<MyPage>{
   @override
   Widget build(BuildContext context){
+
     return CupertinoTabScaffold(
+
         tabBar: CupertinoTabBar(
+          border:  Border.all(
+              color: Colors.white70,
+              width: 4,
+
+          ),
+
             backgroundColor: CupertinoColors.lightBackgroundGray,
             items:[
               BottomNavigationBarItem(
