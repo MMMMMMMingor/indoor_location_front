@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import '../Go.dart';
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
   final String title;
@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         child: Text("Go"),
         onPressed: () {
-
+            Navigator.pushNamed(context, '/Go') ;
         },
       ),
       resizeToAvoidBottomPadding: false,
