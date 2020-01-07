@@ -11,17 +11,23 @@ class MyPage extends StatefulWidget{
 
 class _MyPageState extends State<MyPage>{
   @override
+  int _currentIndex=0;
+  List _pageList=[
+    HomePage(),
+    SearchPage(),
+    MinePage(),
+  ];
   Widget build(BuildContext context){
 
-    return CupertinoTabScaffold(
-
-        tabBar: CupertinoTabBar(
-          border:  Border.all(
-              color: Colors.white70,
-              width: 4,
-
-          ),
-
+    return Scaffold(
+      body: this._pageList[this._currentIndex],
+    bottomNavigationBar: BottomNavigationBar(
+          onTap: (int index){
+            setState(() {
+              this._currentIndex=index;
+            });
+          },
+            currentIndex: this._currentIndex,
             backgroundColor: CupertinoColors.lightBackgroundGray,
             items:[
               BottomNavigationBarItem(
@@ -36,26 +42,9 @@ class _MyPageState extends State<MyPage>{
                 icon: Icon(CupertinoIcons.person_solid),
                 title: Text('我的')
               )
-            ]
-        ),
-        tabBuilder: (context,index){
-          return CupertinoTabView(
-            builder: (context){
-              switch(index){
-                case 0:
-                  return HomePage();
-                  break;
-                case 1:
-                  return SearchPage();
-                  break;
-                case 2:
-                  return MinePage();
-                default:
-                  return Container();
-              }
-            },
-          );
-        }
+            ],
+
+    ),
     );
   }
 }
