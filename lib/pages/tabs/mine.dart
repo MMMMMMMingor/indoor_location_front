@@ -32,7 +32,7 @@ class MinePage extends StatelessWidget{
                   ),
                   new Divider(),
                   new ListTile(
-                    title:new Text('我的店铺1',
+                    title:new Text('我的店铺',
                       style: new TextStyle(fontWeight: FontWeight.w300),
                     ),
                     leading: new Icon(
