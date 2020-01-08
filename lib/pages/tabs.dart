@@ -22,6 +22,7 @@ class _MyPageState extends State<MyPage>{
 
 
     return Scaffold(
+       resizeToAvoidBottomPadding: false,
       body: this._pageList[this._currentIndex],
     bottomNavigationBar: BottomNavigationBar(
           onTap: (int index){

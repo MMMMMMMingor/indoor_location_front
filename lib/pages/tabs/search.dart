@@ -41,13 +41,14 @@ class SearchPage extends StatelessWidget{
         ],
         )
       );
-    }//构建上面icon下面文字的按钮组件的函数
+    }//构建上面icon下面有文字的按钮组件的函数
 
     //呈现整个页面的Scaffold
     return Scaffold(
      
     resizeToAvoidBottomPadding: false,
          body: Container(//整个界面的
+
          child:Column(
            children: <Widget>[
 
@@ -132,7 +133,7 @@ class SearchPage extends StatelessWidget{
                             flex: 1,
                             child: IconButton(
                               icon: Icon(Icons.search),
-                                padding:EdgeInsets.all(10.0),
+                                padding:EdgeInsets.all(8.0),
                               iconSize: 30,
                               
                               onPressed: (){
@@ -226,7 +227,7 @@ class SearchPage extends StatelessWidget{
 
       child: Container(
         width: MediaQuery.of(context).size.width,
-          height: 200.0,
+          height: MediaQuery.of(context).viewInsets.bottom,
           child: Swiper(
             itemBuilder: _swiperBuilder,
             itemCount: 3,
