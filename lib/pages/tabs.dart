@@ -17,7 +17,9 @@ class _MyPageState extends State<MyPage>{
     SearchPage(),
     MinePage(),
   ];
+  
   Widget build(BuildContext context){
+
 
     return Scaffold(
       body: this._pageList[this._currentIndex],
