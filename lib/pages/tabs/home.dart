@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../Go.dart';
+
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
   final String title;
@@ -12,15 +13,16 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+
     // TODO: implement build
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         child: Text("Go"),
         onPressed: () {
-            Navigator.pushNamed(context, '/Go') ;
+          Navigator.pushNamed(context, '/Go');
         },
       ),
-      resizeToAvoidBottomPadding: false,
+        resizeToAvoidBottomPadding: false,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -40,7 +42,7 @@ class _HomePageState extends State<HomePage> {
                           Expanded(
                             flex: 5,
                             child: TextField(
-                                style: TextStyle(fontSize: 30),
+                                style: TextStyle(fontSize: 25),
                                 decoration: InputDecoration.collapsed(
                                     border: InputBorder.none,
                                     hintText: "搜索地址",
@@ -49,16 +51,13 @@ class _HomePageState extends State<HomePage> {
                           Expanded(
                             flex: 1,
                             child: IconButton(
-                              icon: Icon(Icons.search),
-                                padding:EdgeInsets.all(10.0),
-                              iconSize: 30,
-                              onPressed: (){
-
-                                print("aa");
-                              },
+                                icon: Icon(Icons.search),
+                                padding: EdgeInsets.all(10.0),
+                                iconSize: 30,
+                                onPressed: () {
+                                },
                                 color: Colors.blueAccent,
-                                highlightColor: Colors.black
-                            ),
+                                highlightColor: Colors.black),
                           )
                         ],
                       ),
