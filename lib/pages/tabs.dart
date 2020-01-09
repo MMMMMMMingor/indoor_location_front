@@ -17,12 +17,9 @@ class _MyPageState extends State<MyPage>{
     SearchPage(),
     MinePage(),
   ];
-  
   Widget build(BuildContext context){
 
-
     return Scaffold(
-       resizeToAvoidBottomPadding: false,
       body: this._pageList[this._currentIndex],
     bottomNavigationBar: BottomNavigationBar(
           onTap: (int index){

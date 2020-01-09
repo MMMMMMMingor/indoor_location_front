@@ -12,7 +12,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: "Cupertino导航组件集",
         theme: ThemeData.light(),
         home: MyPage(),
       routes: {
