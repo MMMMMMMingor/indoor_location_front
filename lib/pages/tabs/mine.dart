@@ -2,10 +2,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class MinePage extends StatelessWidget{
+import '../personInformation.dart';
+import '../register.dart';
+import '../../model/user.dart';
+import 'dart:io';
+
+class MinePage extends StatefulWidget{
+
+  @override
+  _MinePageState createState()=>new _MinePageState();
+
+}
+
+class _MinePageState extends State<MinePage>{
   @override
   Widget build(BuildContext context){
-
     var card =new SizedBox(
         height: 360.0,
         child: new Card(
@@ -72,14 +83,34 @@ class MinePage extends StatelessWidget{
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment:CrossAxisAlignment.center,
               children: <Widget>[
-                new Container(
-                  width: 5.0,
-                  height: 55.0,
+                new GestureDetector(
+                    child:new ClipOval(
+                      child: new SizedBox(
+                        width: 120,
+                        height: 120,
+                        child: User.instance.url=='images/head_portraits.jpg'?Image.asset(User.instance.url,fit: BoxFit.fill,)
+                            :Image.file(File(User.instance.url),fit: BoxFit.fill),
+                      ),
+                    ),
+                    onTap:() {
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(builder: (context)=>new PersonInformation()));
+                    }
                 ),
-                new CircleAvatar(
-                  radius:50.0,
-                  backgroundImage: new AssetImage("images/head_portraits.jpg"),
-                ),
+                new GestureDetector(
+                    child: new Text(
+                      '  点击登录',
+                      style: new TextStyle(
+                          color: Colors.grey
+                      ),
+                    ),
+                    onTap:() {
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(builder: (context)=>new RegisterPage()));
+                    }
+                )
               ],
             ),
             card,
@@ -87,6 +118,14 @@ class MinePage extends StatelessWidget{
         )
     );
   }
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    setState(() {
+
+    });
+  }
+
 }
 
 
