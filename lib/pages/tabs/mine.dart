@@ -6,6 +6,7 @@ import '../personInformation.dart';
 import '../register.dart';
 import '../../model/user.dart';
 import 'dart:io';
+import '../friendTab.dart';
 
 class MinePage extends StatefulWidget{
 
@@ -66,6 +67,12 @@ class _MinePageState extends State<MinePage>{
                     title:new Text('好友',
                       style: new TextStyle(fontWeight: FontWeight.w300),
                     ),
+                    onTap: (){
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(builder: (context)=>new friendTab()));
+                          //跳转到好友列表界面
+                             },
                     leading: new Icon(
                       Icons.people_outline,
                       color:Colors.lightBlue,
@@ -76,7 +83,8 @@ class _MinePageState extends State<MinePage>{
             )
         )
     );
-    return CupertinoPageScaffold(
+    return Scaffold(
+      body: Container(
         child:ListView(
           children: <Widget>[
             Row(
@@ -116,6 +124,7 @@ class _MinePageState extends State<MinePage>{
             card,
           ],
         )
+        ),
     );
   }
   void didChangeDependencies() {
