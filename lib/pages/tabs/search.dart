@@ -52,9 +52,10 @@ class SearchPage extends StatelessWidget{
          child:Column(
            children: <Widget>[
 
-       
-       Container(//有背景图片的第一部分导航栏
-      height: 160,
+       Expanded(
+         flex: 7,
+      child: Container(//有背景图片的第一部分导航栏
+      // height: 160,
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage("images/searchBack.jpg"),
@@ -170,12 +171,15 @@ class SearchPage extends StatelessWidget{
     )
     )
     ),
+       ),
     // ********************第一部分********
- Padding(
+    Expanded(
+      flex: 9,
+child:Padding(
         padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
          child:Container(
      
-          height:210,
+          // height:210,
           decoration:BoxDecoration(
         // color: Colors.red,
                   color: Colors.white70,
@@ -216,11 +220,14 @@ class SearchPage extends StatelessWidget{
       
     ), //第二部分的container
  ),
+    ),
     // ***************第二部分****************
-    Padding(
+    Expanded(
+      flex: 10,
+   child: Padding(
         padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
            child:Container(//第三部分的container，主要是轮播图
-          height: 220,
+          // height: 220,
         decoration:BoxDecoration(
 
       ),
@@ -244,6 +251,7 @@ class SearchPage extends StatelessWidget{
     )
          ),
     )
+    ),
            ]
      
       )//整个页面的列
