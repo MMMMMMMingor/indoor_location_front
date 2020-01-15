@@ -70,7 +70,9 @@ class SearchPage extends StatelessWidget{
               child:Container( 
                   child:Column(
                            children: <Widget>[
-                             Container(//发现附近这一栏
+                             Expanded(flex: 7,
+                            
+                             child:Container(//发现附近这一栏
                                  child: Row(
                                    children: <Widget>[
                                       Expanded(
@@ -109,10 +111,12 @@ class SearchPage extends StatelessWidget{
                         ],
                            ),
                              ),
-
-                   Container(//搜索栏这一栏
+                             ),
+                        Expanded(flex:5 ,
+                        
+                  child: Container(//搜索栏这一栏
                           child:Padding(
-                            padding: EdgeInsets.fromLTRB(20,30,20,0),
+                            padding: EdgeInsets.fromLTRB(10,0,10,0),
                             
                        child: Column(
 
@@ -162,6 +166,7 @@ class SearchPage extends StatelessWidget{
         ),
        )
       ),
+                        ),
                            ]
     ),
      ),
@@ -176,7 +181,7 @@ class SearchPage extends StatelessWidget{
     Expanded(
       flex: 9,
 child:Padding(
-        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
          child:Container(
      
           // height:210,
@@ -196,7 +201,7 @@ child:Padding(
         children: <Widget>[
            Wrap(
 
-  spacing:10.0, // 主轴(水平)方向间距
+  spacing:20.0, // 主轴(水平)方向间距
   runSpacing:10.0, // 纵轴（垂直）方向间距
   alignment: WrapAlignment.center,
 
