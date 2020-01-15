@@ -5,11 +5,15 @@ import 'dart:convert';
 import 'dart:io';
 import 'pages/tabs.dart';
 import 'pages/Go.dart';
+import 'pages/search_result.dart';
 import 'pages/friendTab.dart';
+import 'pages/GoExpand.dart';
 void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   final routes= {
     '/Go': (context) => Go(),
+    '/Search_result':(context)=>Search_result(),
+    '/GoExpand':(context)=>GoExpand(),
     // '/friendTab': (context) => friendTab(),
     // '/search':(context,{arguments})=>SearchPage(arguments:arguments),//传参数的
   };
