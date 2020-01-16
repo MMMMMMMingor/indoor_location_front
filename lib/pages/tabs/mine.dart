@@ -7,6 +7,7 @@ import '../register.dart';
 import '../../model/user.dart';
 import 'dart:io';
 import '../friendTab.dart';
+import '../myCar.dart';
 
 class MinePage extends StatefulWidget{
 
@@ -41,6 +42,12 @@ class _MinePageState extends State<MinePage>{
                       Icons.directions_car,
                       color:Colors.lightBlue,
                     ),
+                    onTap: (){
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(builder: (context)=>new MyCar()));
+                      //跳转到我的车辆界面
+                    },
                   ),
                   new Divider(),
                   new ListTile(
