@@ -322,7 +322,7 @@ Container(
                                padding: EdgeInsets.all(4.0),
                                iconSize: 30,
                                onPressed: () {
-                                 Navigator.pushNamed(context, '/Go');
+                                 Navigator.pop(context);
                                },
                                color: Colors.blueAccent,
                                highlightColor: Colors.black),
