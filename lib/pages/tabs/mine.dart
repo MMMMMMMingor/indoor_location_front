@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../personInformation.dart';
-import '../register.dart';
+import '../login.dart';
 import '../../model/user.dart';
 import 'dart:io';
 import '../friendTab.dart';
@@ -123,7 +123,7 @@ class _MinePageState extends State<MinePage>{
                     onTap:() {
                       Navigator.push(
                           context,
-                          new MaterialPageRoute(builder: (context)=>new RegisterPage()));
+                          new MaterialPageRoute(builder: (context)=>new LoginPage()));
                     }
                 )
               ],
