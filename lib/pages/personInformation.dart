@@ -1,11 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:my_flutter_app1/model/userInfo.dart';
+import 'package:my_flutter_app1/util/jsonUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 import './modifyInformation.dart';
 import 'package:http/http.dart' as http;
 import '../conf/Config.dart' as Config;
-import '../model/user.dart';
 import 'dart:io';
 
 class PersonInformation extends StatefulWidget {
@@ -14,21 +17,39 @@ class PersonInformation extends StatefulWidget {
 }
 
 class PinforState extends State<PersonInformation> {
-  void getInfo() async {
+
+  // 用户信息
+  UserInfo _userInfo = UserInfo(
+      userId: '',
+      nickname: '',
+      gender: '',
+      age: 18,
+      vocation: '',
+      personLabel: '',
+      avatarUrl: '');
+
+  void getUserInfo() async {
     // 尝试获取本地token
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString("token");
 
     // 若 token存在
     if (token != null) {
+
+      // 获取用户信息
       var response = await http.get(Config.url + "api/user/info",
           headers: {"Authorization": "Bearer $token"});
-      print(response.body);
+      
+      UserInfo info = UserInfo.fromJson(utf8JsonDecode(response.bodyBytes));
+      print(info.toJson());
+      this.setState((){
+        this._userInfo = info;
+      });
+
     } else {
       Toast.show("请先登录", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
-
-      
+      Navigator.popAndPushNamed(context, "/login");
     }
   }
 
@@ -36,7 +57,7 @@ class PinforState extends State<PersonInformation> {
   void initState() {
     //页面初始化
     super.initState();
-    getInfo();
+    getUserInfo();
   }
 
   @override
@@ -53,20 +74,22 @@ class PinforState extends State<PersonInformation> {
                   child: new SizedBox(
                     width: 120,
                     height: 120,
-                    child: User.instance.url == 'images/head_portraits.jpg'
-                        ? Image.asset(
-                            User.instance.url,
-                            fit: BoxFit.fill,
-                          )
-                        : Image.file(File(User.instance.url), fit: BoxFit.fill),
+                    child:
+                        this._userInfo.avatarUrl == ''
+                            ? Image.asset(
+                                this._userInfo.avatarUrl,
+                                fit: BoxFit.fill,
+                              )
+                            : Image.network(this._userInfo.avatarUrl,
+                                fit: BoxFit.fill),
                   ),
                 ),
               )),
-          ListTile(title: Text('昵称  ' + User.instance.name)),
-          ListTile(title: Text('性别  ' + User.instance.sex)),
-          ListTile(title: Text('年龄  ' + User.instance.age.toString())),
-          ListTile(title: Text('职业  ' + User.instance.job)),
-          ListTile(title: Text('个人标签  ' + User.instance.notation)),
+          ListTile(title: Text('昵称  ${this._userInfo.nickname}')),
+          ListTile(title: Text('性别  ${this._userInfo.gender}')),
+          ListTile(title: Text('年龄  ${this._userInfo.age}')),
+          ListTile(title: Text('职业  ${this._userInfo.vocation}')),
+          ListTile(title: Text('个人标签  ${this._userInfo.personLabel}')),
           new Container(
             width: 260,
             height: 50,
