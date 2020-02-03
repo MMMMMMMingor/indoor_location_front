@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:my_flutter_app1/pages/register.dart';
 import 'package:my_flutter_app1/util/jsonUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
@@ -40,12 +41,11 @@ class _LoginState extends State<LoginPage> {
 
         //登陆成功，返回主界面。
         Navigator.pop(context);
-      }else{
+      } else {
         Toast.show("登录失败", context,
             duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
       }
     }
-
   }
 
   @override
@@ -86,18 +86,35 @@ class _LoginState extends State<LoginPage> {
                     ],
                   ),
                 )),
-            new SizedBox(
-              width: 340.0,
-              height: 50.0,
-              child: new CupertinoButton(
-                onPressed: login,
-                color: Colors.blue,
-                disabledColor: Colors.blue,
-                child: new Text(
-                  '登录',
-                  style: TextStyle(fontSize: 18.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                new SizedBox(
+                  width: 340.0,
+                  height: 50.0,
+                  child: new CupertinoButton(
+                    onPressed: login,
+                    color: Colors.blue,
+                    disabledColor: Colors.blue,
+                    child: new Text(
+                      '登录',
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                  ),
                 ),
-              ),
+                new GestureDetector(
+                    child: new Text(
+                      '   注册账号',
+                      style: new TextStyle(color: Colors.grey),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (context) => new RegisterPage()));
+                    })
+              ],
             )
           ],
         ));
