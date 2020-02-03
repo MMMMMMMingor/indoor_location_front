@@ -1,6 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:my_flutter_app1/util/jsonUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,10 +25,12 @@ class _LoginState extends State<LoginPage> {
       loginForm.save();
 
       var response = await http.post(Config.url + "auth/$userName/$password");
-      var data = JwtToken.fromJson(utf8JsonDecode(response.bodyBytes));
+      JwtToken data = JwtToken.fromJson(utf8JsonDecode(response.bodyBytes));
+
+      print(data.token);
 
       // 如果解析成功，即登陆成功
-      if (data != null) {
+      if (data.token != null) {
         Toast.show("登录成功", context,
             duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
 

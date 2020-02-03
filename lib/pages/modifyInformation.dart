@@ -36,7 +36,6 @@ class ModifyInforState extends State<ModifyInformation> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
 
     return Scaffold(
         appBar:new AppBar(

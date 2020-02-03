@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_flutter_app1/model/userInfo.dart';
@@ -9,7 +7,6 @@ import 'package:toast/toast.dart';
 import './modifyInformation.dart';
 import 'package:http/http.dart' as http;
 import '../conf/Config.dart' as Config;
-import 'dart:io';
 
 class PersonInformation extends StatefulWidget {
   @override
@@ -29,10 +26,10 @@ class PinforState extends State<PersonInformation> {
       avatarUrl: '');
 
   void getUserInfo() async {
-    // 尝试获取本地token
+    // 获取单例的本地存储对象
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString("token");
 
+    String token = prefs.getString("token");
     // 若 token存在
     if (token != null) {
 
@@ -77,7 +74,7 @@ class PinforState extends State<PersonInformation> {
                     child:
                         this._userInfo.avatarUrl == ''
                             ? Image.asset(
-                                this._userInfo.avatarUrl,
+                                "images/head_portraits.jpg",
                                 fit: BoxFit.fill,
                               )
                             : Image.network(this._userInfo.avatarUrl,
