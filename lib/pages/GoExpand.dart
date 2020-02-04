@@ -15,9 +15,9 @@ class  GoExpandState extends State< GoExpand> {
       body: Padding(
         padding: EdgeInsets.all(0),
         child: Container(
-          child: Padding(padding: EdgeInsets.all(20.0), child: First()),
+          child: Padding(padding: EdgeInsets.all(0.0), child: First()),
           decoration: BoxDecoration(
-            color: Colors.black12,
+            color: Color(0XFFF0F0F0),
           ),
         ),
       ),
@@ -32,7 +32,10 @@ class First extends StatelessWidget {
     return Container(
         child: Column(
           children: <Widget>[
-Container(
+            Container(
+           child: Padding(
+              padding: EdgeInsets.fromLTRB(20, 30, 20, 0),
+           child: Container(
     child: Column(
        children: <Widget>[
          Expanded(
@@ -99,7 +102,7 @@ Container(
                                        indent: 30.0,
                                        color: Colors.black,
                                      ),
-                                     Expanded(
+                                     Expanded (
                                          flex: 4,
                                          child: Row(
                                            children: <Widget>[
@@ -286,19 +289,11 @@ Container(
                                              )
                                            ],
                                          )),
-                                     Divider(
-                                       height: 1.0,
-                                       indent: 30.0,
-                                       color: Colors.black,
-                                     ),
+
                                    ],
                                  ),
                                  decoration: BoxDecoration(
-                                   color: Colors.white,
-                                   border: Border.all(
-                                       color: Colors.white70, width: 2),
-                                   borderRadius:
-                                   BorderRadius.all(Radius.circular(20.0)),
+                                   color: Color(0XFFF0F0F0),
                                  ),
                                )),
                          )
@@ -333,26 +328,19 @@ Container(
                  ],
                ),
                decoration: BoxDecoration(
-                 color: Colors.white,
-
-                 borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                 color: Color(0XFFF0F0F0),
+                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                ),
          ),
          ),
-         Expanded(
-           flex: 1,
-           child: Container(
-             decoration: BoxDecoration(
-               color: Colors.white,
-               borderRadius: BorderRadius.all(Radius.circular(20.0)),
-             ),
-           ),
+         SizedBox(
+           height: 50,
          ),
-         Expanded(
+        Expanded(
            flex: 1,
            child: Container(
              child:Padding(
-               padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+               padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                child: Container(
                  child: Row(
                    children: <Widget>[
@@ -428,7 +416,7 @@ Container(
                  ),
                  decoration: BoxDecoration(
                    color: Colors.white,
-                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                   borderRadius: BorderRadius.all(Radius.circular(0.0)),
                ),
              ),
              ),
@@ -439,15 +427,23 @@ Container(
   height: 300,
   decoration: BoxDecoration(
     color: Colors.white,
-    border: Border.all(color: Colors.black, width: 1),
-    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+    borderRadius: BorderRadius.all(Radius.circular(5.0)),
   ),
     ),
+
+    ),
+              height: 350,
+              decoration: BoxDecoration(
+                color: Colors.white,
+              ),
+            ),
             SizedBox(
               height: 10,
             ),
           ],
         ),
-        decoration: BoxDecoration());
+        decoration: BoxDecoration(
+          color: Color(0XFFF0F0F0),
+        ));
   }
 }

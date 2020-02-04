@@ -17,7 +17,7 @@ class GoState extends State<Go> {
         padding: EdgeInsets.all(0),
         child: Container(
           child:
-              Padding(padding: EdgeInsets.all(20.0), child: First()),
+              Padding(padding: EdgeInsets.all(0), child: First()),
           decoration: BoxDecoration(
             color: Colors.black12,
           ),
@@ -46,14 +46,18 @@ class First extends StatelessWidget {
     return Container(
         child: Column(
           children: <Widget>[
-            Container(
+           Container(
+
+            child:Padding(
+              padding: EdgeInsets.fromLTRB(20, 30, 10, 20),
+             child:Container(
               child: Row(
                 children: <Widget>[
                   Expanded(
                     flex: 4,
                     child: Column(
                       children: <Widget>[
-                        Expanded(
+                        Expanded     (
                           flex: 1,
                           child: Padding(
                               padding: EdgeInsets.fromLTRB(5, 5, 0, 5),
@@ -154,11 +158,8 @@ class First extends StatelessWidget {
                                   ],
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                      color: Colors.white70, width: 2),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0)),
+                                  color: Color(0XFFF0F0F0),
+
                                 ),
                               )),
                         )
@@ -172,7 +173,7 @@ class First extends StatelessWidget {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                            color: Colors.white70,
+                            color: Colors.white,
                             border: Border.all(color: Colors.black, width: 1),
                             borderRadius:
                                 BorderRadius.all(Radius.circular(150.0))),
@@ -183,7 +184,6 @@ class First extends StatelessWidget {
                               iconSize: 30,
                               onPressed: () {
                                      Navigator.pushNamed(context, '/GoExpand');
-
                               },
                               color: Colors.blueAccent,
                               highlightColor: Colors.black),
@@ -193,17 +193,28 @@ class First extends StatelessWidget {
                   ),
                 ],
               ),
-              height: 80,
+              height: 70,
               decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.black, width: 1),
-                borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                color:Color(0XFFF0F0F0),
+                border: Border.all(
+                    color: Colors.white70, width: 2),
+                borderRadius:
+                BorderRadius.all(Radius.circular(5.0)),
               ),
             ),
+
+    ),
+             height: 130,
+             decoration: BoxDecoration(
+               color: Colors.white,
+             ),
+           ),
             SizedBox(
               height: 10,
             ),
-            Container(
+            Padding(
+              padding:EdgeInsets.fromLTRB(20, 0, 20, 0) ,
+          child:  Container(
               child: Row(
                 children: <Widget>[
                   Expanded(
@@ -283,11 +294,14 @@ class First extends StatelessWidget {
                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
               ),
             ),
+            ),
             SizedBox(
               height: 1,
             ),
             Expanded(
               flex: 1,
+              child:Padding(
+                padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
               child: Container(
                 child: ListView(children: this._getdata()),
                 decoration: BoxDecoration(
@@ -297,9 +311,13 @@ class First extends StatelessWidget {
                 ),
               ),
             ),
+            ),
           ],
         ),
-        decoration: BoxDecoration());
+        decoration: BoxDecoration(
+       color: Color(0XFFF0F0F0),
+        )
+    );
   }
 }
 
