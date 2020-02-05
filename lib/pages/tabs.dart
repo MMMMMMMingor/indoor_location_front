@@ -10,7 +10,6 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
-  @override
   int _currentIndex = 0;
   List _pageList = [
     HomePage(),

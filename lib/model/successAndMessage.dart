@@ -1,26 +1,18 @@
 class SuccessAndMessage {
-  bool _success;
-  String _message;
+  String message;
+  bool success;
 
-  SuccessAndMessage({bool success, String message}) {
-    this._success = success;
-    this._message = message;
-  }
-
-  bool get success => _success;
-  set success(bool success) => _success = success;
-  String get message => _message;
-  set message(String message) => _message = message;
+  SuccessAndMessage({this.message, this.success});
 
   SuccessAndMessage.fromJson(Map<String, dynamic> json) {
-    _success = json['success'];
-    _message = json['message'];
+    message = json['message'];
+    success = json['success'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this._success;
-    data['message'] = this._message;
+    data['message'] = this.message;
+    data['success'] = this.success;
     return data;
   }
 }

@@ -129,7 +129,7 @@ class _FriendTabState extends State<FriendTab> {
   @override
   Widget build(BuildContext context) {
     //返回一个好友的listview,通过Listview.builder
-    var FriendListView = new ListView.builder(
+    var friendListView = new ListView.builder(
         itemCount:
             (this._friendList == null) ? 0 : this._friendList.records.length,
         itemBuilder: (BuildContext context, int position) {
@@ -143,7 +143,7 @@ class _FriendTabState extends State<FriendTab> {
         ),
         body: Container(
           decoration: BoxDecoration(color: Colors.grey[200]),
-          child: FriendListView,
+          child: friendListView,
         )
         // body:Padding(
         //   padding:EdgeInsets.all(0),

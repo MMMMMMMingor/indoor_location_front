@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -11,37 +10,41 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  GlobalKey<FormState> searchKey=new GlobalKey<FormState>();
-  String search;
-  void Search(){
-    var loginForm=searchKey.currentState;
-    if(loginForm.validate()){
+  GlobalKey<FormState> searchKey = new GlobalKey<FormState>();
+  String _search;
+
+  void search() {
+    var loginForm = searchKey.currentState;
+    if (loginForm.validate()) {
       loginForm.save();
+
+      print(_search);
       //由于没有和后端对接，点击之后直接返回
       Navigator.pop(context);
     }
   }
-  _Dialog()
-  async {
-    return showDialog(context: context,
-    builder: (context){
-      return AlertDialog(
-        title: Text("注意!"),
-        content: Text("请输入地址"),
-        actions: <Widget>[
-          FlatButton(
-            child: Text("确定"),
-            onPressed: (){
-              Navigator.pop(context);
-            },
-      )
-        ],
-      );
-    });
+
+  _dialog() async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("注意!"),
+            content: Text("请输入地址"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("确定"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          );
+        });
   }
+
   @override
   Widget build(BuildContext context) {
-
     // TODO: implement build
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -50,7 +53,7 @@ class _HomePageState extends State<HomePage> {
           Navigator.pushNamed(context, '/Go');
         },
       ),
-        resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomPadding: false,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -68,24 +71,26 @@ class _HomePageState extends State<HomePage> {
                       child: Row(
                         children: <Widget>[
                           Expanded(
-                            flex: 5,
-                            child:Form(
-                              key: searchKey,
-                              child: TextFormField(
-                                obscureText: true,
-                                validator: (value){
-                                  return value.length<1?_Dialog():Navigator.pushNamed(context, '/Search_result');
-                                },
-                                onSaved:(value){
-                                  search=value;
-                                },
-                                style: TextStyle(fontSize: 25),
-                                decoration: InputDecoration.collapsed(
-                                    border: InputBorder.none,
-                                    hintText: "搜索地址",
-                                    hintStyle: TextStyle())),
-                            )
-                          ),
+                              flex: 5,
+                              child: Form(
+                                key: searchKey,
+                                child: TextFormField(
+                                    obscureText: true,
+                                    validator: (value) {
+                                      return value.length < 1
+                                          ? _dialog()
+                                          : Navigator.pushNamed(
+                                              context, '/Search_result');
+                                    },
+                                    onSaved: (value) {
+                                      _search = value;
+                                    },
+                                    style: TextStyle(fontSize: 25),
+                                    decoration: InputDecoration.collapsed(
+                                        border: InputBorder.none,
+                                        hintText: "搜索地址",
+                                        hintStyle: TextStyle())),
+                              )),
                           Expanded(
                             flex: 1,
                             child: IconButton(
@@ -93,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                                 padding: EdgeInsets.all(10.0),
                                 iconSize: 30,
                                 onPressed: () {
-                                  Search();
+                                  search();
                                 },
                                 color: Colors.blueAccent,
                                 highlightColor: Colors.black),
@@ -142,14 +147,15 @@ class _HomePageState extends State<HomePage> {
                           ),
                           Padding(
                             padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
-                            child:Container(
+                            child: Container(
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(
                                   color: Colors.white70,
-                                  border: Border.all(color: Colors.black, width: 1),
+                                  border:
+                                      Border.all(color: Colors.black, width: 1),
                                   borderRadius:
-                                  BorderRadius.all(Radius.circular(150.0))),
+                                      BorderRadius.all(Radius.circular(150.0))),
                               child: Center(
                                 child: IconButton(
                                     icon: Icon(Icons.adjust),

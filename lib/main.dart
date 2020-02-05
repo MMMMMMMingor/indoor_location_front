@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:my_flutter_app1/pages/login.dart';
-import 'dart:convert';
-import 'dart:io';
 import 'pages/tabs.dart';
 import 'pages/Go.dart';
 import 'pages/search_result.dart';
-import 'pages/friendTab.dart';
 import 'pages/GoExpand.dart';
 
 void main() => runApp(MyApp());
