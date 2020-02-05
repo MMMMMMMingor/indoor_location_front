@@ -18,7 +18,6 @@ class MinePage extends StatefulWidget {
 }
 
 class _MinePageState extends State<MinePage> {
-
   // 用户信息
   UserInfo _userInfo;
 
@@ -32,12 +31,15 @@ class _MinePageState extends State<MinePage> {
       // 获取用户信息
       var response = await http.get(Config.url + "/api/user/info",
           headers: {"Authorization": "Bearer $token"});
+      UserInfo userInfo = UserInfo.fromJson(utf8JsonDecode(response.bodyBytes));
 
-      UserInfo info = UserInfo.fromJson(utf8JsonDecode(response.bodyBytes));
-      print(info.toJson());
-      this.setState(() {
-        this._userInfo = info;
-      });
+      // 判断token是否过期
+      if (userInfo.userId != null) {
+        this.setState(() {
+          this._userInfo = userInfo;
+        });
+      }
+
     } else {
       Toast.show("请先登录", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
@@ -47,8 +49,13 @@ class _MinePageState extends State<MinePage> {
 
   @override
   void initState() {
-    //页面初始化
     super.initState();
+    getUserInfo();
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
     getUserInfo();
   }
 
@@ -153,7 +160,7 @@ class _MinePageState extends State<MinePage> {
                   }),
               new GestureDetector(
                   child: new Text(
-                    this._userInfo == null? '点击登录' : '切换账号',
+                    this._userInfo == null ? '点击登录' : '切换账号',
                     style: new TextStyle(color: Colors.grey),
                   ),
                   onTap: () {
@@ -170,10 +177,4 @@ class _MinePageState extends State<MinePage> {
     );
   }
 
-  @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-    setState(() {});
-  }
 }

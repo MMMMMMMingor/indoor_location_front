@@ -15,7 +15,7 @@ class PersonInformation extends StatefulWidget {
 
 class PinforState extends State<PersonInformation> {
 
-  // 用户信息
+  // 默认用户信息
   UserInfo _userInfo = UserInfo(
       userId: '',
       nickname: '',

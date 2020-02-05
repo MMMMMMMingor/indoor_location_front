@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -27,7 +25,7 @@ class _LoginState extends State<LoginPage> {
 
       var response = await http.post(Config.url + "auth/$userName/$password");
       JwtToken data = JwtToken.fromJson(utf8JsonDecode(response.bodyBytes));
-
+      
       print(data.token);
 
       // 如果解析成功，即登陆成功
