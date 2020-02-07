@@ -1,118 +1,186 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:my_flutter_app1/model/jwtToken.dart';
 import 'package:my_flutter_app1/pages/register.dart';
 import 'package:my_flutter_app1/util/jsonUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 import '../conf/Config.dart' as Config;
-import '../model/jwtToken.dart';
 
 class LoginPage extends StatefulWidget {
   @override
-  _LoginState createState() => _LoginState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginState extends State<LoginPage> {
-  GlobalKey<FormState> loginKey = new GlobalKey<FormState>();
-  String userName;
-  String password;
+class _LoginPageState extends State<LoginPage> {
+  final _formKey = new GlobalKey<FormState>();
 
-  void login() async {
-    var loginForm = loginKey.currentState;
-    if (loginForm.validate()) {
-      loginForm.save();
+  String _userName;
+  String _password;
 
-      var response = await http.post(Config.url + "auth/$userName/$password");
-      JwtToken data = JwtToken.fromJson(utf8JsonDecode(response.bodyBytes));
-      
+  void _onLogin() async {
+    final form = _formKey.currentState;
+    form.save();
+
+    if (_userName == '') {
+      _showMessageDialog('账号不可为空');
+      return;
+    }
+    if (_password == '') {
+      _showMessageDialog('密码不可为空');
+      return;
+    }
+
+    var response = await http.post(Config.url + "auth/$_userName/$_password");
+    JwtToken data = JwtToken.fromJson(utf8JsonDecode(response.bodyBytes));
+
 //      print(data.token);
 
-      // 如果解析成功，即登陆成功
-      if (data.token != null) {
-        Toast.show("登录成功", context,
-            duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
+    // 如果解析成功，即登陆成功
+    if (data.token != null) {
+      Toast.show("登录成功", context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
 
-        // 保存 token
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString("token", data.token);
+      // 保存 token
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString("token", data.token);
 
-        //登陆成功，返回主界面。
-        Navigator.popAndPushNamed(context, "/tab");
-      } else {
-        Toast.show("登录失败", context,
-            duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
-      }
+      //登陆成功，返回主界面。
+      Navigator.popAndPushNamed(context, "/tab");
+    } else {
+      Toast.show("登录失败", context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
     }
+  }
+
+  void _showMessageDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text('提示'),
+          content: new Text(message),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("ok"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _showUserInput() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(15.0, 10.0, 0.0, 0.0),
+      child: new TextFormField(
+        maxLines: 1,
+        keyboardType: TextInputType.emailAddress,
+        autofocus: false,
+        style: TextStyle(fontSize: 15),
+        decoration: new InputDecoration(
+            border: InputBorder.none,
+            hintText: '请输入帐号',
+            icon: new Icon(
+              Icons.person,
+              color: Colors.grey,
+            )),
+        onSaved: (value) => _userName = value.trim(),
+      ),
+    );
+  }
+
+  Widget _showPasswordInput() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(15.0, 10.0, 0.0, 0.0),
+      child: new TextFormField(
+        maxLines: 1,
+        obscureText: true,
+        autofocus: false,
+        style: TextStyle(fontSize: 15),
+        decoration: new InputDecoration(
+            border: InputBorder.none,
+            hintText: '请输入密码',
+            icon: new Icon(
+              Icons.lock,
+              color: Colors.grey,
+            )),
+        onSaved: (value) => _password = value.trim(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: new AppBar(
-          title: new Text('登录'),
+    return Scaffold(
+        appBar: CupertinoNavigationBar(
+          backgroundColor: Colors.white,
+          middle: const Text('登录'),
         ),
-        body: new Column(
+        body: ListView(
           children: <Widget>[
-            new Container(
-                padding: const EdgeInsets.all(16.0),
-                child: new Form(
-                  key: loginKey,
-                  child: new Column(
+            Container(
+              padding: const EdgeInsets.only(top: 30),
+              height: 220,
+              child: Image.network(
+                  'https://i2.hdslb.com/bfs/face/bcdf640faa16ebaacea1d4c930baabaec9087a80.jpg@50w_50h.webp',
+                  fit: BoxFit.fitHeight),
+            ),
+            Form(
+              key: _formKey,
+              child: Container(
+                height: 130,
+                padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                child: Card(
+                  child: Column(
                     children: <Widget>[
-                      new TextFormField(
-                        decoration: new InputDecoration(
-                          labelText: '请输入用户名',
-                        ),
-                        onSaved: (value) {
-                          userName = value;
-                        },
-                        onFieldSubmitted: (value) {},
+                      _showUserInput(),
+                      Divider(
+                        height: 0.5,
+                        indent: 16.0,
+                        color: Colors.grey[300],
                       ),
-                      new TextFormField(
-                        decoration: new InputDecoration(
-                          labelText: '请输入密码',
-                        ),
-                        obscureText: true,
-                        validator: (value) {
-                          return value.length < 6 ? "密码长度不够6位" : null;
-                        },
-                        onSaved: (value) {
-                          password = value;
-                        },
-                      )
+                      _showPasswordInput(),
                     ],
                   ),
-                )),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                new SizedBox(
-                  width: 340.0,
-                  height: 50.0,
-                  child: new CupertinoButton(
-                    onPressed: login,
-                    color: Colors.blue,
-                    disabledColor: Colors.blue,
-                    child: new Text(
-                      '登录',
-                      style: TextStyle(fontSize: 18.0),
-                    ),
-                  ),
                 ),
-                new GestureDetector(
-                    child: new Text(
-                      '   注册账号',
-                      style: new TextStyle(color: Colors.grey),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          new MaterialPageRoute(
-                              builder: (context) => new RegisterPage()));
-                    })
-              ],
+              ),
+            ),
+            Container(
+              height: 70,
+              padding: const EdgeInsets.fromLTRB(35, 30, 35, 0),
+              child: OutlineButton(
+                child: Text('登录'),
+                textColor: Colors.orange,
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                borderSide: BorderSide(color: Colors.orange, width: 1),
+                onPressed: () {
+                  _onLogin();
+                },
+              ),
+            ),
+            Container(
+              height: 70,
+              padding: const EdgeInsets.fromLTRB(300, 30, 35, 0),
+              child: GestureDetector(
+                  child: new Text(
+                    '注册账号',
+                    style: new TextStyle(color: Colors.black),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) => new RegisterPage()));
+                  }),
             )
           ],
         ));

@@ -137,14 +137,14 @@ class _RegisterPageState extends State<RegisterPage> {
                     padding: const EdgeInsets.all(8.0),
                     child: Image.asset(
                       "images/head_portraits.jpg",
-                      width: 444,
-                      height: 300,
+                      width: 300,
+                      height: 100,
                     ),
                   ),
                 ),
                 Container(
-                    width: 710,
-                    height: 90,
+                    width: 400,
+                    height: 50,
                     decoration: BoxDecoration(
                       color: Color(0xFFF2F2F2),
                     ),
@@ -155,7 +155,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           child: Center(
                             child: Text("账号",
                                 style: TextStyle(
-                                  fontSize: 28.0,
+                                  fontSize: 20.0,
                                 )),
                           ),
                         ),
@@ -174,7 +174,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ))
                     ,Container(
                     width: 710,
-                    height: 90,
+                    height: 50,
                     decoration: BoxDecoration(
                       color: Color(0xFFF2F2F2),
                     ),
@@ -185,7 +185,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           child: Center(
                             child: Text("密码",
                                 style: TextStyle(
-                                  fontSize: 28.0,
+                                  fontSize: 20.0,
                                 )),
                           ),
                         ),
@@ -205,7 +205,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     )),
                     Container(
                     width: 710,
-                    height: 90,
+                    height: 50,
                     decoration: BoxDecoration(
                       color: Color(0xFFF2F2F2),
                     ),
@@ -216,7 +216,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           child: Center(
                             child: Text("确认密码",
                                 style: TextStyle(
-                                  fontSize: 28.0,
+                                  fontSize: 20.0,
                                 )),
                           ),
                         ),
@@ -236,7 +236,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     )),
                 Container(
                     width: 710,
-                    height: 90,
+                    height: 50,
                     decoration: BoxDecoration(
                       color: Color(0xFFF2F2F2),
                     ),
@@ -247,7 +247,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           child: Center(
                             child: Text("邮箱地址",
                                 style: TextStyle(
-                                  fontSize: 28.0,
+                                  fontSize: 20.0,
                                 )),
                           ),
                         ),
@@ -267,24 +267,24 @@ class _RegisterPageState extends State<RegisterPage> {
                 Container(
                     margin: EdgeInsets.only(top: 20.0),
                     width: 710,
-                    height: 90,
+                    height: 50,
                     child: Row(
                       children: <Widget>[
                         Container(
                           decoration: BoxDecoration(
                             color: Color(0xFFF2F2F2),
                           ),
-                          width: 444,
+                          width: 200,
                           height: 90,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Container(
-                                width: 160,
+                                width: 100,
                                 child: Center(
                                   child: Text("验证码",
                                       style: TextStyle(
-                                        fontSize: 28.0,
+                                        fontSize: 20.0,
                                       )),
                                 ),
                               ),
@@ -310,7 +310,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                         Expanded(
                             child: Padding(
-                                padding: EdgeInsets.only(left: 15.0),
+                                padding: EdgeInsets.only(left: 30.0),
                                 child: Builder(builder: (BuildContext context) {
                                   return FlatButton(
                                       onPressed: sendEmail,
@@ -321,7 +321,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                           ? Colors.white
                                           : Colors.black54,
                                       child: Container(
-                                        height: 80,
+                                        height: 50,
                                         child: Center(
                                           child: Text(_start == 60
                                               ? "获取验证码"
@@ -334,7 +334,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 Container(
                     margin: EdgeInsets.only(top: 20.0),
                     width: 300,
-                    height: 90,
+                    height: 50,
                     child: Builder(builder: (context) {
                       return FlatButton(
                         color: Colors.blue,
@@ -342,7 +342,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         onPressed: sendRegisterRequest,
                         child: Container(
                           width: 710,
-                          height: 90,
+                          height: 50,
                           child: Center(
                             child: Text(
                               "注册",
@@ -364,3 +364,5 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 }
+
+

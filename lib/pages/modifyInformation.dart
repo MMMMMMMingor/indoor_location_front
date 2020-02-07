@@ -9,7 +9,6 @@ import 'package:my_flutter_app1/util/jsonUtil.dart';
 import 'package:my_flutter_app1/util/upload.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
-import '../model/user.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import '../conf/Config.dart' as Config;
@@ -51,18 +50,17 @@ class ModifyInformationState extends State<ModifyInformation> {
 
   // 保存
   void save() async {
-//    var saveForm = saveKey.currentState;
-//
-//    if (saveForm.validate()) {
-//      saveForm.save();
-//      User.instance.url = _imagePath;
-//      User.instance.myprint();
-//    }
+    var saveForm = saveKey.currentState;
 
-    var response = await http.post(Config.url + "api/user/modify", headers: {
-      "Authorization": "Bearer ${await getToken()}",
-      "Content-Type": "application/json"
-    }, body: """
+    if (saveForm.validate()) {
+      saveForm.save();
+
+//      print(this._userInfo.toJson());
+
+      var response = await http.post(Config.url + "api/user/modify", headers: {
+        "Authorization": "Bearer ${await getToken()}",
+        "Content-Type": "application/json"
+      }, body: """
         {
           "age": ${this._userInfo.age},
           "avatarUrl": "${this._userInfo.avatarUrl}",
@@ -73,14 +71,17 @@ class ModifyInformationState extends State<ModifyInformation> {
         }
         """);
 
-    SuccessAndMessage data = SuccessAndMessage.fromJson(utf8JsonDecode(response.bodyBytes));
+      var data = SuccessAndMessage.fromJson(utf8JsonDecode(response.bodyBytes));
 
 
-    if(data.success){
-      Navigator.pop(context);
-      Toast.show(data.message, context,
-          duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
+      if(data.success){
+        Navigator.popAndPushNamed(context, "/tab");
+        Toast.show(data.message, context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
+      }
+
     }
+
   }
 
   void getUserInfo() async {
