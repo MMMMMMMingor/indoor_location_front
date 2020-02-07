@@ -1,11 +1,16 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:my_flutter_app1/model/successAndMessage.dart';
-import 'package:my_flutter_app1/util/jsonUtil.dart';
-import 'package:toast/toast.dart';
-import '../util/validUtil.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:my_flutter_app1/model/jwtToken.dart';
+import 'package:my_flutter_app1/model/successAndMessage.dart';
+import 'package:my_flutter_app1/pages/register.dart';
+import 'package:my_flutter_app1/util/jsonUtil.dart';
+import 'package:my_flutter_app1/util/validUtil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 import '../conf/Config.dart' as Config;
 
 class RegisterPage extends StatefulWidget {
@@ -14,6 +19,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final _formKey = new GlobalKey<FormState>();
   TextEditingController _username = TextEditingController();
   TextEditingController _password = TextEditingController();
   TextEditingController _confirmPassword = TextEditingController();
@@ -45,7 +51,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  // 发送验证邮件 
+  // 发送验证邮件
   void sendEmail() async {
     _emailFocus.unfocus();
     if (_start != 60) {
@@ -54,52 +60,54 @@ class _RegisterPageState extends State<RegisterPage> {
     }
     var result = validateEmail(this._email.text); //验证邮箱
     if (result == true) {
-
       // 获取发送验证码
-      var response = await http.post(Config.url + "api/email/verifyCode/${this._email.text}");
-      SuccessAndMessage data = SuccessAndMessage.fromJson(utf8JsonDecode(response.bodyBytes));
+      var response = await http
+          .post(Config.url + "api/email/verifyCode/${this._email.text}");
+      SuccessAndMessage data =
+          SuccessAndMessage.fromJson(utf8JsonDecode(response.bodyBytes));
 
-      if(data.success == true){
+      if (data.success == true) {
         Toast.show("验证码已发送至${this._email.text}", context,
-        duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
+            duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
         countdown();
-      }else{
+      } else {
         Toast.show("验证码发送失败", context,
-        duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
+            duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
       }
-      
     } else {
       Toast.show("邮箱不能为空，或者邮箱格式错误", context,
-        duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
+          duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
     }
   }
 
   // 发送注册请求
-  void sendRegisterRequest() async{
+  void sendRegisterRequest() async {
     _veriFocus.unfocus();
     _emailFocus.unfocus();
     // Scaffold.of(context).hideCurrentSnackBar();
 
-    bool noNull = this._username.text.isEmpty 
-                  || this._password.text.isEmpty
-                  || this._confirmPassword.text.isEmpty
-                  || this._email.text.isEmpty
-                  || this._verifyCode.text.isEmpty;
-    if(noNull){
-      Toast.show("请填写所有注册信息", context, duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
+    bool noNull = this._username.text.isEmpty ||
+        this._password.text.isEmpty ||
+        this._confirmPassword.text.isEmpty ||
+        this._email.text.isEmpty ||
+        this._verifyCode.text.isEmpty;
+    if (noNull) {
+      Toast.show("请填写所有注册信息", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
       return;
     }
 
-    bool passwordConfirm = this._password.text.compareTo(this._confirmPassword.text) == 0;
-    if(!passwordConfirm){
-      Toast.show("两次输入的密码不一致", context, duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
+    bool passwordConfirm =
+        this._password.text.compareTo(this._confirmPassword.text) == 0;
+    if (!passwordConfirm) {
+      Toast.show("两次输入的密码不一致", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
       return;
     }
 
     // 发送注册请求
-    var response = await http.post(Config.url + "api/user/register", 
-    headers: {"Content-Type" : "application/json"},
-    body: """
+    var response = await http.post(Config.url + "api/user/register",
+        headers: {"Content-Type": "application/json"}, body: """
             {
               "email": "${this._email.text}",
               "password": "${this._password.text}",
@@ -107,15 +115,167 @@ class _RegisterPageState extends State<RegisterPage> {
               "verifyCode": ${this._verifyCode.text}
             }
           """);
-    SuccessAndMessage data = SuccessAndMessage.fromJson(utf8JsonDecode(response.bodyBytes));
+    SuccessAndMessage data =
+        SuccessAndMessage.fromJson(utf8JsonDecode(response.bodyBytes));
 
-    if(data.success == true){
-      Toast.show("注册成功", context, duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
+    if (data.success == true) {
+      Toast.show("注册成功", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
       Navigator.pop(context);
-    }else{
-      Toast.show("注册失败，${data.message}", context, duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
+    } else {
+      Toast.show("注册失败，${data.message}", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
     }
-   
+  }
+
+  void _showMessageDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text('提示'),
+          content: new Text(message),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("ok"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _showUserInput() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(15.0, 10.0, 0.0, 0.0),
+      child: new TextFormField(
+        maxLines: 1,
+        focusNode: _usernameFocus,
+        keyboardType: TextInputType.emailAddress,
+        autofocus: false,
+        style: TextStyle(fontSize: 15),
+        decoration: new InputDecoration(
+            border: InputBorder.none,
+            hintText: '请输入帐号',
+            icon: new Icon(
+              Icons.person,
+              color: Colors.grey,
+            )),
+        controller: _username,
+      ),
+    );
+  }
+
+  Widget _showPasswordInput() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(15.0, 10.0, 0.0, 0.0),
+      child: new TextFormField(
+        maxLines: 1,
+        obscureText: true,
+        autofocus: false,
+        focusNode: _passwordFocus,
+        style: TextStyle(fontSize: 15),
+        decoration: new InputDecoration(
+            border: InputBorder.none,
+            hintText: '请输入密码',
+            icon: new Icon(
+              Icons.lock,
+              color: Colors.grey,
+            )),
+        controller: _password,
+      ),
+    );
+  }
+
+  Widget _showPasswordInputAgain() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(15.0, 10.0, 0.0, 0.0),
+      child: new TextFormField(
+        maxLines: 1,
+        obscureText: true,
+        autofocus: false,
+        focusNode: _confirmPasswordFocus,
+        style: TextStyle(fontSize: 15),
+        decoration: new InputDecoration(
+            border: InputBorder.none,
+            hintText: '请再输入密码',
+            icon: new Icon(
+              Icons.lock,
+              color: Colors.grey,
+            )),
+        controller: _confirmPassword,
+      ),
+    );
+  }
+
+  Widget _showEmailInput() {
+    return Container(
+        padding: const EdgeInsets.fromLTRB(15.0, 10.0, 0.0, 0.0),
+        child: new Form(
+            child: new Row(children: <Widget>[
+          new SizedBox(
+            width: 220,
+            child: TextFormField(
+              maxLines: 1,
+              autofocus: false,
+              style: TextStyle(fontSize: 15),
+              focusNode: _emailFocus,
+              decoration: new InputDecoration(
+                  border: InputBorder.none,
+                  hintText: '请输入邮箱',
+                  icon: new Icon(
+                    Icons.email,
+                    color: Colors.grey,
+                  )),
+              controller: _email,
+            ),
+          ),
+          new Container(
+            height: 50,
+            child: new OutlineButton(
+              child: Text(_start == 60 ? "获取验证码" : "$_start S"),
+              textColor: Colors.orange,
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              borderSide: BorderSide(color: Colors.orange, width: 1),
+              onPressed: () {
+                sendEmail();
+              },
+            ),
+          )
+        ])));
+  }
+
+  Widget _showYzmInput() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(15.0, 10.0, 0.0, 0.0),
+      child: new TextFormField(
+        maxLines: 1,
+        focusNode: _veriFocus,
+        controller: _verifyCode,
+        keyboardType: TextInputType.number,
+        autofocus: false,
+        style: TextStyle(fontSize: 15),
+        decoration: new InputDecoration(
+            border: InputBorder.none,
+            hintText: '验证码',
+            icon: new Icon(
+              Icons.fingerprint,
+              color: Colors.grey,
+            )),
+        validator: (value) {
+          if (value.isEmpty || value.length != 6) {
+            return '请输入验证码';
+          }
+          return null;
+        },
+      ),
+    );
   }
 
   @override
@@ -124,245 +284,69 @@ class _RegisterPageState extends State<RegisterPage> {
         appBar: AppBar(
           title: Text("注册"),
         ),
-        body: Container(
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height,
-            color: Colors.white,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Image.asset(
-                      "images/head_portraits.jpg",
-                      width: 300,
-                      height: 100,
-                    ),
+        body: ListView(
+          children: <Widget>[
+            Container(
+              padding: const EdgeInsets.only(top: 30),
+              height: 150,
+              child: Image.network(
+                  'https://i2.hdslb.com/bfs/face/bcdf640faa16ebaacea1d4c930baabaec9087a80.jpg@50w_50h.webp',
+                  fit: BoxFit.fitHeight),
+            ),
+            Form(
+              key: _formKey,
+              child: Container(
+                height: 294,
+                padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                child: Card(
+                  child: Column(
+                    children: <Widget>[
+                      _showUserInput(),
+                      Divider(
+                        height: 0.5,
+                        indent: 16.0,
+                        color: Colors.grey[300],
+                      ),
+                      _showPasswordInput(),
+                      Divider(
+                        height: 0.5,
+                        indent: 16.0,
+                        color: Colors.grey[300],
+                      ),
+                      _showPasswordInputAgain(),
+                      Divider(
+                        height: 0.5,
+                        indent: 16.0,
+                        color: Colors.grey[300],
+                      ),
+                      _showEmailInput(),
+                      Divider(
+                        height: 0.5,
+                        indent: 16.0,
+                        color: Colors.grey[300],
+                      ),
+                      _showYzmInput(),
+                    ],
                   ),
                 ),
-                Container(
-                    width: 400,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFF2F2F2),
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Container(
-                          width: 160,
-                          child: Center(
-                            child: Text("账号",
-                                style: TextStyle(
-                                  fontSize: 20.0,
-                                )),
-                          ),
-                        ),
-                        Expanded(
-                          child: TextFormField(
-                            focusNode: _usernameFocus,
-                            keyboardType: TextInputType.text,
-                            decoration: const InputDecoration(
-                              hintText: '请输入账号',
-                              border: InputBorder.none,
-                            ),
-                            controller: _username,
-                          ),
-                        )
-                      ],
-                    ))
-                    ,Container(
-                    width: 710,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFF2F2F2),
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Container(
-                          width: 160,
-                          child: Center(
-                            child: Text("密码",
-                                style: TextStyle(
-                                  fontSize: 20.0,
-                                )),
-                          ),
-                        ),
-                        Expanded(
-                          child: TextFormField(
-                            focusNode: _passwordFocus,
-                            keyboardType: TextInputType.visiblePassword,
-                            obscureText: true,
-                            decoration: const InputDecoration(
-                              hintText: '请输入密码',
-                              border: InputBorder.none,
-                            ),
-                            controller: _password,
-                          ),
-                        )
-                      ],
-                    )),
-                    Container(
-                    width: 710,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFF2F2F2),
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Container(
-                          width: 160,
-                          child: Center(
-                            child: Text("确认密码",
-                                style: TextStyle(
-                                  fontSize: 20.0,
-                                )),
-                          ),
-                        ),
-                        Expanded(
-                          child: TextFormField(
-                            focusNode: _confirmPasswordFocus,
-                            keyboardType: TextInputType.visiblePassword,
-                            obscureText: true,
-                            decoration: const InputDecoration(
-                              hintText: '再一次输入密码',
-                              border: InputBorder.none,
-                            ),
-                            controller: _confirmPassword,
-                          ),
-                        )
-                      ],
-                    )),
-                Container(
-                    width: 710,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFF2F2F2),
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Container(
-                          width: 160,
-                          child: Center(
-                            child: Text("邮箱地址",
-                                style: TextStyle(
-                                  fontSize: 20.0,
-                                )),
-                          ),
-                        ),
-                        Expanded(
-                          child: TextFormField(
-                            focusNode: _emailFocus,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: const InputDecoration(
-                              hintText: '请输入邮箱地址',
-                              border: InputBorder.none,
-                            ),
-                            controller: _email,
-                          ),
-                        )
-                      ],
-                    )),
-                Container(
-                    margin: EdgeInsets.only(top: 20.0),
-                    width: 710,
-                    height: 50,
-                    child: Row(
-                      children: <Widget>[
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFF2F2F2),
-                          ),
-                          width: 200,
-                          height: 90,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Container(
-                                width: 100,
-                                child: Center(
-                                  child: Text("验证码",
-                                      style: TextStyle(
-                                        fontSize: 20.0,
-                                      )),
-                                ),
-                              ),
-                              Expanded(
-                                child: TextFormField(
-                                  focusNode: _veriFocus,
-                                  controller: _verifyCode,
-                                  keyboardType: TextInputType.number,
-                                  decoration: const InputDecoration(
-                                    hintText: "请输入验证码",
-                                    border: InputBorder.none,
-                                  ),
-                                  validator: (value) {
-                                    if (value.isEmpty || value.length != 6) {
-                                      return '请输入验证码';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                            child: Padding(
-                                padding: EdgeInsets.only(left: 30.0),
-                                child: Builder(builder: (BuildContext context) {
-                                  return FlatButton(
-                                      onPressed: sendEmail,
-                                      color: _start == 60
-                                          ? Colors.blue
-                                          : Colors.grey,
-                                      textColor: _start == 60
-                                          ? Colors.white
-                                          : Colors.black54,
-                                      child: Container(
-                                        height: 50,
-                                        child: Center(
-                                          child: Text(_start == 60
-                                              ? "获取验证码"
-                                              : "$_start S"),
-                                        ),
-                                      ));
-                                })))
-                      ],
-                    )),
-                Container(
-                    margin: EdgeInsets.only(top: 20.0),
-                    width: 300,
-                    height: 50,
-                    child: Builder(builder: (context) {
-                      return FlatButton(
-                        color: Colors.blue,
-                        textColor: Colors.white,
-                        onPressed: sendRegisterRequest,
-                        child: Container(
-                          width: 710,
-                          height: 50,
-                          child: Center(
-                            child: Text(
-                              "注册",
-                              style: TextStyle(fontSize: 28.0),
-                            ),
-                          ),
-                        ),
-                      );
-                    })),
-              ],
-            )),
-        resizeToAvoidBottomPadding: false);
-  }
-
-  @override
-  void dispose() {
-    //定时器清除
-    _timer?.cancel();
-    super.dispose();
+              ),
+            ),
+            Container(
+              height: 70,
+              padding: const EdgeInsets.fromLTRB(35, 30, 35, 0),
+              child: OutlineButton(
+                child: Text('注册'),
+                textColor: Colors.orange,
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                borderSide: BorderSide(color: Colors.orange, width: 1),
+                onPressed: () {
+                  sendRegisterRequest();
+                },
+              ),
+            ),
+          ],
+        ));
   }
 }
-
-
