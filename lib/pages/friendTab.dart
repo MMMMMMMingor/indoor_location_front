@@ -31,7 +31,6 @@ class _FriendTabState extends State<FriendTab> {
     this.setState(() {
       this._friendList = friendPage;
     });
-    return;
   }
 
 //制作每个List item 的样式

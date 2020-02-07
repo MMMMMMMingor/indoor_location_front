@@ -26,10 +26,10 @@ class PinforState extends State<PersonInformation> {
       avatarUrl: '');
 
   void getUserInfo() async {
-    // 获取单例的本地存储对象
+    // 获取token
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
     String token = prefs.getString("token");
+
     // 若 token存在
     if (token != null) {
 

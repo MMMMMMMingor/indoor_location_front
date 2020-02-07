@@ -26,7 +26,7 @@ class _LoginState extends State<LoginPage> {
       var response = await http.post(Config.url + "auth/$userName/$password");
       JwtToken data = JwtToken.fromJson(utf8JsonDecode(response.bodyBytes));
       
-      print(data.token);
+//      print(data.token);
 
       // 如果解析成功，即登陆成功
       if (data.token != null) {
@@ -38,7 +38,7 @@ class _LoginState extends State<LoginPage> {
         prefs.setString("token", data.token);
 
         //登陆成功，返回主界面。
-        Navigator.pop(context);
+        Navigator.popAndPushNamed(context, "/tab");
       } else {
         Toast.show("登录失败", context,
             duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);

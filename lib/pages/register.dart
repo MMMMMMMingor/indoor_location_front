@@ -16,12 +16,12 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   TextEditingController _username = TextEditingController();
   TextEditingController _password = TextEditingController();
-  TextEditingController _confrimPassword = TextEditingController();
+  TextEditingController _confirmPassword = TextEditingController();
   TextEditingController _email = TextEditingController();
-  TextEditingController _veriCode = TextEditingController();
+  TextEditingController _verifyCode = TextEditingController();
   FocusNode _usernameFocus = FocusNode();
   FocusNode _passwordFocus = FocusNode();
-  FocusNode _confrimPasswordFocus = FocusNode();
+  FocusNode _confirmPasswordFocus = FocusNode();
   FocusNode _emailFocus = FocusNode();
   FocusNode _veriFocus = FocusNode();
   Timer _timer;
@@ -82,15 +82,15 @@ class _RegisterPageState extends State<RegisterPage> {
 
     bool noNull = this._username.text.isEmpty 
                   || this._password.text.isEmpty
-                  || this._confrimPassword.text.isEmpty
+                  || this._confirmPassword.text.isEmpty
                   || this._email.text.isEmpty
-                  || this._veriCode.text.isEmpty;
+                  || this._verifyCode.text.isEmpty;
     if(noNull){
       Toast.show("请填写所有注册信息", context, duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
       return;
     }
 
-    bool passwordConfirm = this._password.text.compareTo(this._confrimPassword.text) == 0;
+    bool passwordConfirm = this._password.text.compareTo(this._confirmPassword.text) == 0;
     if(!passwordConfirm){
       Toast.show("两次输入的密码不一致", context, duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
       return;
@@ -104,7 +104,7 @@ class _RegisterPageState extends State<RegisterPage> {
               "email": "${this._email.text}",
               "password": "${this._password.text}",
               "username": "${this._username.text}",
-              "verifyCode": ${this._veriCode.text}
+              "verifyCode": ${this._verifyCode.text}
             }
           """);
     SuccessAndMessage data = SuccessAndMessage.fromJson(utf8JsonDecode(response.bodyBytes));
@@ -222,14 +222,14 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                         Expanded(
                           child: TextFormField(
-                            focusNode: _confrimPasswordFocus,
+                            focusNode: _confirmPasswordFocus,
                             keyboardType: TextInputType.visiblePassword,
                             obscureText: true,
                             decoration: const InputDecoration(
                               hintText: '再一次输入密码',
                               border: InputBorder.none,
                             ),
-                            controller: _confrimPassword,
+                            controller: _confirmPassword,
                           ),
                         )
                       ],
@@ -291,7 +291,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               Expanded(
                                 child: TextFormField(
                                   focusNode: _veriFocus,
-                                  controller: _veriCode,
+                                  controller: _verifyCode,
                                   keyboardType: TextInputType.number,
                                   decoration: const InputDecoration(
                                     hintText: "请输入验证码",

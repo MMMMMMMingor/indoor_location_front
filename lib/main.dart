@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
     '/Search_result': (context) => Search_result(),
     '/GoExpand': (context) => GoExpand(),
     '/login': (context) => LoginPage(),
+    '/tab' : (context) => MyPage(),
     // '/friendTab': (context) => friendTab(),
     // '/search':(context,{arguments})=>SearchPage(arguments:arguments),//传参数的
   };
