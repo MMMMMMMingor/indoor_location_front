@@ -281,8 +281,9 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("注册"),
+        appBar: CupertinoNavigationBar(
+          backgroundColor: Colors.white,
+          middle: const Text('登录'),
         ),
         body: ListView(
           children: <Widget>[
