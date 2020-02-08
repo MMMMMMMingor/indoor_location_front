@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:my_flutter_app1/model/userInfo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +12,29 @@ Future<String> getToken() async {
 
   return Future(() => token);
 }
+
+// 展示对话框
+void showMessageDialog(String message, BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      // return object of type Dialog
+      return AlertDialog(
+        title: new Text('提示'),
+        content: new Text(message),
+        actions: <Widget>[
+          new FlatButton(
+            child: new Text("ok"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
 
 Future<UserInfo> getUserInfo() async {
   // 获取token

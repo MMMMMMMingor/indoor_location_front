@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_flutter_app1/model/jwtToken.dart';
 import 'package:my_flutter_app1/pages/register.dart';
+import 'package:my_flutter_app1/util/commonUtil.dart';
 import 'package:my_flutter_app1/util/jsonUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
@@ -25,11 +26,11 @@ class _LoginPageState extends State<LoginPage> {
     form.save();
 
     if (_userName == '') {
-      _showMessageDialog('账号不可为空');
+      showMessageDialog('账号不可为空', context);
       return;
     }
     if (_password == '') {
-      _showMessageDialog('密码不可为空');
+      showMessageDialog('密码不可为空', context);
       return;
     }
 
@@ -55,26 +56,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _showMessageDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: new Text('提示'),
-          content: new Text(message),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text("ok"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   Widget _showUserInput() {
     return Padding(

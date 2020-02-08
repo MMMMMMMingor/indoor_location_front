@@ -42,11 +42,11 @@ class _MinePageState extends State<MinePage> {
         return;
       }
     }
-    Navigator.push(context,
-        new MaterialPageRoute(builder: (context) => new LoginPage()));
+
     Toast.show("请先登录", context,
         duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
 
+    Navigator.pushNamed(context, '/login');
   }
 
   @override
