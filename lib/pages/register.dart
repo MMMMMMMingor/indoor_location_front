@@ -4,12 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:my_flutter_app1/model/jwtToken.dart';
 import 'package:my_flutter_app1/model/successAndMessage.dart';
-import 'package:my_flutter_app1/pages/register.dart';
 import 'package:my_flutter_app1/util/jsonUtil.dart';
 import 'package:my_flutter_app1/util/validUtil.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 import '../conf/Config.dart' as Config;
 
@@ -115,8 +112,7 @@ class _RegisterPageState extends State<RegisterPage> {
               "verifyCode": ${this._verifyCode.text}
             }
           """);
-    SuccessAndMessage data =
-        SuccessAndMessage.fromJson(utf8JsonDecode(response.bodyBytes));
+    SuccessAndMessage data = SuccessAndMessage.fromJson(utf8JsonDecode(response.bodyBytes));
 
     if (data.success == true) {
       Toast.show("注册成功", context,
@@ -128,26 +124,6 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  void _showMessageDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: new Text('提示'),
-          content: new Text(message),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text("ok"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   Widget _showUserInput() {
     return Padding(
@@ -289,7 +265,7 @@ class _RegisterPageState extends State<RegisterPage> {
           children: <Widget>[
             Container(
               padding: const EdgeInsets.only(top: 30),
-              height: 150,
+              height: 170,
               child: Image.network(
                   'https://i2.hdslb.com/bfs/face/bcdf640faa16ebaacea1d4c930baabaec9087a80.jpg@50w_50h.webp',
                   fit: BoxFit.fitHeight),
@@ -297,7 +273,7 @@ class _RegisterPageState extends State<RegisterPage> {
             Form(
               key: _formKey,
               child: Container(
-                height: 294,
+                height: 310,
                 padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
                 child: Card(
                   child: Column(
@@ -349,5 +325,12 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ],
         ));
+  }
+
+  @override
+  void dispose() {
+    // 消除定时器
+    super.dispose();
+    _timer.cancel();
   }
 }
