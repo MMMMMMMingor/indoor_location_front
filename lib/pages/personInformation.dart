@@ -7,6 +7,7 @@ import 'package:toast/toast.dart';
 import './modifyInformation.dart';
 import 'package:http/http.dart' as http;
 import '../conf/Config.dart' as Config;
+import './login.dart';
 
 class PersonInformation extends StatefulWidget {
   @override
@@ -36,7 +37,7 @@ class PinforState extends State<PersonInformation> {
       // 获取用户信息
       var response = await http.get(Config.url + "api/user/info",
           headers: {"Authorization": "Bearer $token"});
-      
+
       UserInfo info = UserInfo.fromJson(utf8JsonDecode(response.bodyBytes));
       print(info.toJson());
       this.setState((){
@@ -63,45 +64,70 @@ class PinforState extends State<PersonInformation> {
         appBar: new AppBar(
           title: new Text('个人信息'),
         ),
-        body: new Column(children: <Widget>[
-          new SizedBox(
-              height: 150.0,
-              child: Center(
-                child: new ClipOval(
-                  child: new SizedBox(
-                    width: 120,
-                    height: 120,
-                    child:
-                        this._userInfo.avatarUrl == ''
-                            ? Image.asset(
-                                "images/head_portraits.jpg",
-                                fit: BoxFit.fill,
-                              )
-                            : Image.network(this._userInfo.avatarUrl,
-                                fit: BoxFit.fill),
+        body: new SingleChildScrollView(
+          child: new Column(children: <Widget>[
+            new SizedBox(
+                height: 150.0,
+                child: Center(
+                  child: new ClipOval(
+                    child: new SizedBox(
+                      width: 120,
+                      height: 120,
+                      child:
+                      this._userInfo.avatarUrl == ''
+                          ? Image.asset(
+                        "images/head_portraits.jpg",
+                        fit: BoxFit.fill,
+                      )
+                          : Image.network(this._userInfo.avatarUrl,
+                          fit: BoxFit.fill),
+                    ),
                   ),
+                )),
+            ListTile(title: Text('昵称  ${this._userInfo.nickname}')),
+            ListTile(title: Text('性别  ${this._userInfo.gender}')),
+            ListTile(title: Text('年龄  ${this._userInfo.age}')),
+            ListTile(title: Text('职业  ${this._userInfo.vocation}')),
+            ListTile(title: Text('个人标签  ${this._userInfo.personLabel}')),
+            new Container(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: new Container(
+                width: 260,
+                height: 50,
+                child: new CupertinoButton(
+                  child: Text('点击修改'),
+                  color: Colors.blue,
+                  disabledColor: Colors.blue,
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) => new ModifyInformation()));
+                  },
                 ),
-              )),
-          ListTile(title: Text('昵称  ${this._userInfo.nickname}')),
-          ListTile(title: Text('性别  ${this._userInfo.gender}')),
-          ListTile(title: Text('年龄  ${this._userInfo.age}')),
-          ListTile(title: Text('职业  ${this._userInfo.vocation}')),
-          ListTile(title: Text('个人标签  ${this._userInfo.personLabel}')),
-          new Container(
-            width: 260,
-            height: 50,
-            child: new CupertinoButton(
-              child: Text('点击修改'),
-              color: Colors.blue,
-              disabledColor: Colors.blue,
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (context) => new ModifyInformation()));
-              },
+              ),
             ),
-          )
-        ]));
+            new Container(
+              padding:  const EdgeInsets.only(bottom: 10),
+              child: new Container(
+                width: 260,
+                height: 50,
+                child: new CupertinoButton(
+                  child: Text('切换账号'),
+                  color: Color(0xFFFF4500),
+                  disabledColor: Color(0xFFFF4500),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) => new LoginPage()));
+                  },
+                ),
+              ),
+            )
+          ]),
+        )
+
+    );
   }
 }

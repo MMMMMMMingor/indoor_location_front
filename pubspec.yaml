@@ -29,7 +29,7 @@ dependencies:
   flutter_swiper: ^1.0.6 
   toast: ^0.1.5
   shared_preferences: ^0.5.4
-  
+  image_cropper: ^1.2.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -50,6 +50,7 @@ flutter:
   assets:
   - images/head_portraits.jpg
   - images/searchBack.jpg
+  - images/mineBack.png
   #  - images/a_dot_burr.jpeg
   #  - images/a_dot_ham.jpeg
 
