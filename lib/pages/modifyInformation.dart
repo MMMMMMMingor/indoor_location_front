@@ -14,7 +14,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:http/http.dart' as http;
 import '../conf/Config.dart' as Config;
-
+import 'package:simple_image_crop/simple_image_crop.dart';
+import 'simpleCrop.dart';
 
 class ModifyInformation extends StatefulWidget {
   @override
@@ -23,14 +24,14 @@ class ModifyInformation extends StatefulWidget {
 
 class ModifyInformationState extends State<ModifyInformation> {
   GlobalKey<FormState> saveKey = new GlobalKey<FormState>();
-
+  final cropKey = GlobalKey<ImgCropState>();
   //_imagePath存储用户临时选择尚未确认的头像图片路径
   var _imagePath;
   var imageFile;
   UserInfo _userInfo = UserInfo();
 
   //裁剪图片
-  Future<Null> _cropImage() async {
+  /*Future<Null> _cropImage() async {
     File croppedFile = await ImageCropper.cropImage(
         sourcePath: imageFile.path,
         aspectRatio:CropAspectRatio(ratioX: 1,ratioY: 1),
@@ -62,14 +63,32 @@ class ModifyInformationState extends State<ModifyInformation> {
             duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
       }
     }
-  }
+  }*/
 
   _openGallery() async {
 
     //选取图片之后进行裁剪
     imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-    _cropImage();
+    //_cropImage();
+    final croppedFile=await Navigator.push(
+        context,
+        new MaterialPageRoute(
+            builder: (context) => new SimpleCrop(image: imageFile,)));
+    if (croppedFile != null) {
+      imageFile = croppedFile;
+      setState(() {
+        this._imagePath = imageFile.path;
+      });
+      try {
+        String avatarUrl = await uploadImage(imageFile.path, "image");
 
+        this._userInfo.avatarUrl = avatarUrl;
+
+      } catch (exception) {
+        Toast.show("头像上传错误， 请重新选择", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
+      }
+    }
   }
 
   // 保存
