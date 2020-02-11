@@ -21,13 +21,13 @@ class _SimpleCropState extends State<SimpleCrop> {
         appBar: AppBar(
           elevation: 0,
           title: Text(
-            'Zoom and Crop',
-            style: TextStyle(color: Colors.black),
+            '裁剪图片',
+            style: TextStyle(color: Colors.white),
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.blue,
           leading: new IconButton(
             icon:
-            new Icon(Icons.navigate_before, color: Colors.black, size: 40),
+            new Icon(Icons.navigate_before, color: Colors.white, size: 40),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
