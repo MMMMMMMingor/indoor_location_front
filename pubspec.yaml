@@ -50,6 +50,7 @@ flutter:
   assets:
   - images/head_portraits.jpg
   - images/searchBack.jpg
+  - images/mineBack.png
   #  - images/a_dot_burr.jpeg
   #  - images/a_dot_ham.jpeg
 

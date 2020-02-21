@@ -52,7 +52,10 @@ class _MinePageState extends State<MinePage> {
   @override
   void initState() {
     super.initState();
-    getUserInfo();
+    if(this._userInfo==null){
+      print('下载');
+      getUserInfo();
+    }
   }
 
 
@@ -62,115 +65,136 @@ class _MinePageState extends State<MinePage> {
         height: 360.0,
         child: new Card(
             child: new Column(children: <Widget>[
-          new ListTile(
-            title: new Text(
-              '收藏',
-              style: new TextStyle(fontWeight: FontWeight.w300),
-            ),
-            leading: new Icon(
-              Icons.star_border,
-              color: Colors.lightBlue,
-            ),
-          ),
-          new Divider(),
-          new ListTile(
-            title: new Text(
-              '我的车辆',
-              style: new TextStyle(fontWeight: FontWeight.w300),
-            ),
-            leading: new Icon(
-              Icons.directions_car,
-              color: Colors.lightBlue,
-            ),
-            onTap: () {
-              Navigator.push(context,
-                  new MaterialPageRoute(builder: (context) => new MyCar()));
-              //跳转到我的车辆界面
-            },
-          ),
-          new Divider(),
-          new ListTile(
-            title: new Text(
-              '我的店铺',
-              style: new TextStyle(fontWeight: FontWeight.w300),
-            ),
-            leading: new Icon(
-              Icons.shopping_cart,
-              color: Colors.lightBlue,
-            ),
-          ),
-          new Divider(),
-          new ListTile(
-            title: new Text(
-              '消息',
-              style: new TextStyle(fontWeight: FontWeight.w300),
-            ),
-            leading: new Icon(
-              Icons.message,
-              color: Colors.lightBlue,
-            ),
-          ),
-          new Divider(),
-          new ListTile(
-            title: new Text(
-              '好友',
-              style: new TextStyle(fontWeight: FontWeight.w300),
-            ),
-            onTap: () {
-              Navigator.push(context,
-                  new MaterialPageRoute(builder: (context) => new FriendTab()));
-              //跳转到好友列表界面
-            },
-            leading: new Icon(
-              Icons.people_outline,
-              color: Colors.lightBlue,
-            ),
-          ),
-        ])));
+              new ListTile(
+                title: new Text(
+                  '收藏',
+                  style: new TextStyle(fontWeight: FontWeight.w300),
+                ),
+                leading: new Icon(
+                  Icons.star_border,
+                  color: Colors.lightBlue,
+                ),
+              ),
+              new Divider(),
+              new ListTile(
+                title: new Text(
+                  '我的车辆',
+                  style: new TextStyle(fontWeight: FontWeight.w300),
+                ),
+                leading: new Icon(
+                  Icons.directions_car,
+                  color: Colors.lightBlue,
+                ),
+                onTap: () {
+                  Navigator.push(context,
+                      new MaterialPageRoute(builder: (context) => new MyCar()));
+                  //跳转到我的车辆界面
+                },
+              ),
+              new Divider(),
+              new ListTile(
+                title: new Text(
+                  '我的店铺',
+                  style: new TextStyle(fontWeight: FontWeight.w300),
+                ),
+                leading: new Icon(
+                  Icons.shopping_cart,
+                  color: Colors.lightBlue,
+                ),
+              ),
+              new Divider(),
+              new ListTile(
+                title: new Text(
+                  '消息',
+                  style: new TextStyle(fontWeight: FontWeight.w300),
+                ),
+                leading: new Icon(
+                  Icons.message,
+                  color: Colors.lightBlue,
+                ),
+              ),
+              new Divider(),
+              new ListTile(
+                title: new Text(
+                  '好友',
+                  style: new TextStyle(fontWeight: FontWeight.w300),
+                ),
+                onTap: () {
+                  Navigator.push(context,
+                      new MaterialPageRoute(builder: (context) => new FriendTab()));
+                  //跳转到好友列表界面
+                },
+                leading: new Icon(
+                  Icons.people_outline,
+                  color: Colors.lightBlue,
+                ),
+              ),
+            ])));
     return Scaffold(
       body: Container(
           child: ListView(
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              new GestureDetector(
-                  child: new ClipOval(
-                    child: new SizedBox(
-                      width: 120,
-                      height: 120,
-                      child: this._userInfo == null
-                          ? Image.asset(
-                              'images/head_portraits.jpg',
-                              fit: BoxFit.fill,
-                            )
-                          : Image.network(this._userInfo.avatarUrl,
-                              fit: BoxFit.fill),
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("images/mineBack.png"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    new Container(
+                      padding: EdgeInsets.all(12),
+                      child: new GestureDetector(
+                          child: new ClipOval(
+                            child: new SizedBox(
+                              width: 120,
+                              height: 120,
+                              child: this._userInfo == null
+                                  ? Image.asset(
+                                'images/head_portraits.jpg',
+                                fit: BoxFit.fill,
+                              )
+                                  : Image.network(this._userInfo.avatarUrl,
+                                  fit: BoxFit.fill),
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                new MaterialPageRoute(
+                                    builder: (context) => new PersonInformation()));
+                          }),
                     ),
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (context) => new PersonInformation()));
-                  }),
-              new GestureDetector(
-                  child: new Text(
-                    this._userInfo == null ? '  点击登录' : '  切换账号',
-                    style: new TextStyle(color: Colors.grey),
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (context) => new LoginPage()));
-                  })
+                    new Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Text(
+                            this._userInfo == null ? '  ' :this._userInfo.nickname,
+                            style: new TextStyle(color: Colors.white,
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold
+                            ),
+                          ),
+                        ),
+                        Text(
+                          '我的个人空间',
+                          style: new TextStyle(color: Colors.white,
+                              fontWeight: FontWeight.w300
+                          ),)
+                      ],
+                    )
+                  ],
+                ),
+              ),
+
+              card,
             ],
-          ),
-          card,
-        ],
-      )),
+          )),
     );
   }
 
