@@ -25,6 +25,7 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
               leading: Icon(Icons.wifi),
               title: Text(ssid),
               subtitle: Text(bssid),
+              trailing: Text("信号强度: ${signalStrength.toString()}"),
             ),
             ButtonBar(
               children: <Widget>[
@@ -35,7 +36,7 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
                   },
                 ),
                 FlatButton(
-                  child: const Text('LISTEN'),
+                  child: const Text('取消选择'),
                   onPressed: () {/* ... */},
                 ),
               ],
