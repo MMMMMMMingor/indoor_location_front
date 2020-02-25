@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:my_flutter_app1/model/imageUrl.dart';
-import 'package:my_flutter_app1/model/userInfo.dart';
 import 'package:path/path.dart';
 import 'package:async/async.dart';
 import 'dart:io';

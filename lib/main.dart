@@ -5,6 +5,7 @@ import 'pages/tabs.dart';
 import 'pages/Go.dart';
 import 'pages/search_result.dart';
 import 'pages/GoExpand.dart';
+import 'pages/createLocationService.dart';
 
 void main() => runApp(MyApp());
 
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget {
     '/GoExpand': (context) => GoExpand(),
     '/login': (context) => LoginPage(),
     '/tab' : (context) => MyPage(),
+    '/createLocationService' : (context) => CreateLocationService(),
     // '/friendTab': (context) => friendTab(),
     // '/search':(context,{arguments})=>SearchPage(arguments:arguments),//传参数的
   };
