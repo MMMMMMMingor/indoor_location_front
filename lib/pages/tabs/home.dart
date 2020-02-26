@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:my_flutter_app1/util/commonUtil.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -41,6 +42,12 @@ class _HomePageState extends State<HomePage> {
             ],
           );
         });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    validateLogin(context);
   }
 
   @override

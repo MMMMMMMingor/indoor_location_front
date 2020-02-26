@@ -29,14 +29,12 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
     this._loading = true;
     this.setState(() { });
 
-    // 获取本地token
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString("token");
-
     ThreeAPs _threeAPs =
         new ThreeAPs(ap1: _apList[0], ap2: _apList[1], ap3: _apList[2]);
 
-    print(jsonEncode(_threeAPs));
+    // 获取本地token
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString("token");
 
     var response = await http.post(Config.url + "/api/location/create",
         headers: {
