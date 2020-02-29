@@ -5,7 +5,7 @@ import 'package:my_flutter_app1/pages/login.dart';
 import 'pages/tabs.dart';
 import 'pages/Go.dart';
 import 'pages/search_result.dart';
-import 'pages/GoExpand.dart';
+import 'pages/CollectFingerPrint.dart';
 import 'pages/createLocationService.dart';
 
 void main() => runApp(MyApp());
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   final routes = {
     '/Go': (context) => Go(),
     '/Search_result': (context) => Search_result(),
-    '/GoExpand': (context, {APMeta arguments}) => GoExpand(arguments: arguments),
+    '/collect': (context, {APMeta arguments}) => CollectFingerPrint(arguments: arguments),
     '/login': (context) => LoginPage(),
     '/tab': (context) => MyPage(),
     '/createLocationService': (context) => CreateLocationService(),

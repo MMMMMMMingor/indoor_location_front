@@ -135,7 +135,17 @@ class GoState extends State<Go> {
                       color: Colors.blue,
                       colorBrightness: Brightness.light,
                       onPressed: () {
-                        Navigator.pushNamed(context, '/GoExpand',
+                        Navigator.pop(context, apMeta);
+                      }),
+                  MaterialButton(
+                      child: Text(
+                        "添加指纹",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      color: Colors.green,
+                      colorBrightness: Brightness.light,
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/collect',
                             arguments: apMeta);
                       }),
                   MaterialButton(

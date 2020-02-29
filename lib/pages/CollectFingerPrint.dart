@@ -13,15 +13,16 @@ import 'package:wifi_hunter/wifi_hunter.dart'; // ap数据采集所需插件
 import 'package:http/http.dart' as http;
 import 'package:my_flutter_app1/conf/Config.dart' as Config;
 
-class GoExpand extends StatefulWidget {
+class CollectFingerPrint extends StatefulWidget {
   final APMeta arguments;
 
-  const GoExpand({Key key, this.arguments}) : super(key: key);
+  const CollectFingerPrint({Key key, this.arguments}) : super(key: key);
 
-  GoExpandState createState() => GoExpandState(arguments: arguments);
+  _CollectFingerPrintState createState() =>
+      _CollectFingerPrintState(arguments: arguments);
 }
 
-class GoExpandState extends State<GoExpand> {
+class _CollectFingerPrintState extends State<CollectFingerPrint> {
   final APMeta arguments;
   final _formKey = new GlobalKey<FormState>();
   ThreeAPDetail _threeAPDetail;
@@ -31,7 +32,7 @@ class GoExpandState extends State<GoExpand> {
   int x, y;
   bool _sending = false;
 
-  GoExpandState({this.arguments});
+  _CollectFingerPrintState({this.arguments});
 
   void _startCollectRequest() async {
     // 获取本地token
