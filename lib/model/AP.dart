@@ -1,8 +1,8 @@
 class AP {
   String bssid;
   String ssid;
-  int x;
-  int y;
+  double x;
+  double y;
 
   AP({this.bssid, this.ssid, this.x, this.y});
 

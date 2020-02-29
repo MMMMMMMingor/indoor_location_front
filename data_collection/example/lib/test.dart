@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:indoor_data_collection/indoor_data_collection.dart';
-import 'package:exmaple/main.dart';
+import 'package:testapp/main.dart';
 
 WiFiCollector collector;
 WiFiDataManager manager;
@@ -14,20 +14,20 @@ Future<void> runTest() async {
 
   sender = new WiFiMessageSender("39.99.131.85", "/fingerprint", port: 1883);   // autoConnect
   await Future.delayed(Duration(seconds: 3));                                   // wait for a while
-  
+
+  var a = [
     // edit your knownAPs and replace the following
-  // var apList = [
-  //   "00:2f:d9:ab:c0:f7",
-  //   "1c:fa:68:36:5f:8e",
-  //   "b6:6b:fc:3f:e8:91",
-  //   "e4:d3:32:94:a5:ac",
-  //   "88:88:88:88:87:88"
-  // ];
+    "00:2f:d9:ab:c0:f7",
+    "1c:fa:68:36:5f:8e",
+    "b6:6b:fc:3f:e8:91",
+    "e4:d3:32:94:a5:ac",
+    "88:88:88:88:87:88"
+  ];
 
   // 创建一个周期为 5 秒的 collector 并开始采集数据
   collector = new WiFiCollector(setSeconds: 5);
-  // collector.knownAPs = apList;
-  collector.manager = new WiFiDataManager(preprocess: false);
+  collector.knownAPs = a;
+  collector.manager = new WiFiDataManager();
   collector.manager.sender = sender;
   collector.startCollect();
 

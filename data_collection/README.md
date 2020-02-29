@@ -1,15 +1,17 @@
 # 华南理工大学室内定位系统数据采集
 
 包名称：Indoor Data Collection (indoor_data_collection)  
-版本：0.2.2 (2020.02.25)  
+版本：0.3.0 (2020.02.26)  
 
 ## 类
 * `WiFiCollector` - 采集器
 * `WiFiDataManager` - 管理器
 * `WiFiMessageSender` - 发送器
+* `MessageReceiver` - 接收器
 
 ### 数据流
 (WiFi Data ->) `Collector` -> `Manager` -> `Sender` (-> MQTT broker)  
+(MQTT broker ->) `Receiver`
 
 
 ## WiFiCollector
@@ -21,7 +23,7 @@
 创建一个采集器。  
 * setSeconds: 可选，指定采集WiFi数据的周期。默认为5秒钟采集一次。
 * manager: 可选，指定一个数据管理器。这样可以把采集到的数据交给`manager`管理。如果不指定，则为空，collector仅采集数据。
-* knownAPs: 可选，指定采集器要关注的WiFi AP列表。如果设置，那么采集器将仅采集所给的AP的信号强度（其他不在表中的AP数据会被丢弃，如果表中某个AP没有扫描到，则会以0填充）。如果未指定或指定的是空表，将采集所有的WiFi数据。
+* knownAPs: 可选，指定采集器要关注的WiFi AP列表。如果设置，那么采集器将仅采集所给的AP的信号强度（其他不在表中的AP数据会被丢弃，如果表中某个AP没有扫描到，则会以`0`填充）。如果未指定或指定的是空表，将采集所有的WiFi数据。
 
 ### 属性
 #### setSeconds -> *int*
@@ -67,8 +69,8 @@
 返回管理器内最新的一组WiFi数据。如果没有数据，返回新的空白`Map`。
 
 
-## WiFiMessageSender
-消息发送器类。可以MQTT协议发送类型为`Map<String, int>`的位置指纹信息。
+## WiFiMessageSender / MessageReceiver
+消息发送器及接收器类。其中`Sender`可以MQTT协议发送类型为`Map<String, int>`的位置指纹信息。`Receiver`可接收指定主题的消息。由于两者有公共父类，大部分属性及方法都相同，故将两个类一并介绍。只能用于其中某个类的属性和方法会特别注明。
 
 ### 构造函数
 #### WiFiMessageSender(String broker, String topic, {int port = 1883, int connectTimes = 10, bool autoConnect = true, String identifier})
@@ -78,19 +80,47 @@
 * port: 可选，指定服务器的连接端口，默认为`1883`。
 * connectTimes: 可选，指定每次连接尝试的最大次数。默认为`10`。如果经过`connectTimes`次尝试仍没有连上，就返回连接失败。  
 * autoConnect: 可选，指定在构造时是否自动尝试连接。默认为`true`。如果设置为`false`，需要后续手动连接。
-* identifier: 可选，指定客户端标识符。默认为`"indoor-data-collection"`。如需设置，不能为空。
+* identifier: 可选，指定客户端标识符。默认为`"indoor-data-collection-sender"`。如需设置，不能为空。
+
+#### MessageReceiver(String broker, {int port = 1883, int connectTimes = 10, bool autoConnect = true, String identifier, Function(String, String) onData})
+创建一个消息接收器。  
+* broker: 必需，指定MQTT服务器。例如`39.99.131.85`、`test.mosquitto.org`等。
+* port: 可选，指定服务器的连接端口，默认为`1883`。
+* connectTimes: 可选，指定每次连接尝试的最大次数。默认为`10`。如果经过`connectTimes`次尝试仍没有连上，就返回连接失败。  
+* autoConnect: 可选，指定在构造时是否自动尝试连接。默认为`true`。如果设置为`false`，需要后续手动连接。
+* identifier: 可选，指定客户端标识符。默认为`"indoor-data-collection-receiver"`。如需设置，不能为空。
+* onData: 可选，每次接收到消息时调用的函数。前一个`String`是消息体，后一个`String`是主题。除此之外，还可以给每个订阅的主题设置一个函数用于处理消息（见下）。
+
 
 ### 属性
-#### broker -> *final String*
-使用的MQTT服务器。一旦构造不可再更改，要使用别的服务器，请创建一个新的`sender`。
-#### topic -> *final String*
-使用的MQTT主题。一旦构造不可再更改，要使用别的主题，请创建一个新的`sender`。
-#### port -> *final int*
-连接的服务器端口。一旦构造不可再更改，要使用别的端口，请创建一个新的`sender`。
+#### broker <-> *String*
+使用的MQTT服务器。如果更改，当前的连接会被断开，需要稍后手动重连。
+#### port <-> *int*
+连接的服务器端口。如果更改，当前的连接会被断开，需要稍后手动重连。
+#### identifier -> *String*
+客户端标识符。
 #### connectTimes -> *final int*
 调用一次连接函数所尝试的最大次数。一旦构造不可再更改。
 #### connected -> *bool*
 返回当前连接状态。已连接为`true`。
+#### topic <-> *String*
+【仅`Sender`】使用的MQTT主题。可以更改，之后的消息发送便会使用新的主题。
+#### qos <-> *Qos*
+【仅`Sender`】指定消息发送的质量。有以下枚举值可选：
+
+`Qos` | 含义 | 默认  
+---- | :--  | ----  
+`atMostOnce` | 最多一次 |     
+`atLeastOnce` | 最少一次 |   
+`exactlyOnce` | 恰好一次 | 是  
+
+对QoS的修改会体现在下一次的消息发送中。
+#### topics -> *List\<String>*
+【仅`Receiver`】已订阅的主题列表。
+#### onData <-> *Function(String message, String topic)*
+【仅`Receiver`】每次接收到消息时调用的函数。
+#### log <-> *Function(String)*
+日志函数，默认为`print`。
 
 ### 方法
 #### connect() async -> *Future\<int>*
@@ -103,8 +133,11 @@
 超时 | 1  
 未知错误 | 2  
 
+#### disconnect() -> *void*
+解除订阅并断开连接。  
+
 #### sendMessage(Map\<String, int> data) async -> *Future\<bool>*
-发送编码为json的位置指纹消息。发送成功则返回`true`，否则返回`false`。如果还未连接，会首先尝试连接（最多重复`connectTimes`次）。它可以被`manager`自动调用。  
+【仅`Sender`】发送编码为json的位置指纹消息。发送成功则返回`true`，否则返回`false`。如果还未连接，会首先尝试连接（最多重复`connectTimes`次）。它可以被`manager`自动调用。  
 发送消息需要一定的时间（不会太长）。因此，如果在调用此函数后立即退出程序，可能无法完成消息的发送。  
 编码的样例为：  
 ```json
@@ -115,8 +148,15 @@
 }
 ```
 
-#### disconnect() -> *void*
-解除订阅并断开连接。  
+#### subscribe(String topic, {Qos qos = Qos.exactlyOnce, Function(String) callOnData}) async -> *Future\<bool>*
+【仅`Receiver`】订阅某个主题，可指定消息质量（默认为恰好一次）。如果订阅成功或者主题已订阅返回`true`。**如果设置了`callOnData`，则该主题消息到来时便会自动调用该函数并向其传递消息内容。因此，可以为每个主题定制一个处理函数。**
+
+#### unsubscribe(String topic) -> *void*
+【仅`Receiver`】退订某个主题。
+
+#### isSubscribed(String topic) -> *bool*
+【仅`Receiver`】查询某个主题是否已经订阅。
+
 
 
 ## 使用样例

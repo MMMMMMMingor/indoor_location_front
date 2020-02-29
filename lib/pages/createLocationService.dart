@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:my_flutter_app1/model/AP.dart';
 import 'package:my_flutter_app1/model/ThreeAPs.dart';
 import 'package:my_flutter_app1/model/successAndMessage.dart';
+import 'package:my_flutter_app1/pages/Go.dart';
 import 'package:my_flutter_app1/util/commonUtil.dart';
 import 'package:my_flutter_app1/util/jsonUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,7 +28,7 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
 
   void sendHttpReuqest() async {
     this._loading = true;
-    this.setState(() { });
+    this.setState(() {});
 
     ThreeAPs _threeAPs =
         new ThreeAPs(ap1: _apList[0], ap2: _apList[1], ap3: _apList[2]);
@@ -36,7 +37,7 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString("token");
 
-    var response = await http.post(Config.url + "/api/location/create",
+    var response = await http.post(Config.url + "api/location/create",
         headers: {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json"
@@ -51,12 +52,17 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
     print(successAndMessage.toJson());
 
     this._loading = false;
-    this.setState(() { });
+    this.setState(() {});
 
     if (successAndMessage.success == true) {
       Toast.show("添加成功", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
-      Navigator.of(context).pop();
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Go()))
+          .then((value) {
+        setState(() {});
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+      });
     } else {
       Toast.show("添加失败，请稍后再尝试", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
@@ -67,8 +73,8 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
   void addWiFi(String bssid, String ssid) {
     if (this._apList.length < 3) {
       final _formKey = new GlobalKey<FormState>();
-      int x;
-      int y;
+      double x;
+      double y;
 
       showDialog<Null>(
           context: context,
@@ -86,13 +92,13 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
                       style: TextStyle(fontSize: 15),
                       decoration: new InputDecoration(
                           border: InputBorder.none,
-                          hintText: '请输入x轴坐标（整数）',
+                          hintText: '请输入x轴坐标',
                           icon: new Icon(
                             Icons.zoom_out_map,
                             color: Colors.grey,
                           )),
                       keyboardType: TextInputType.number,
-                      onSaved: (value) => x = int.parse(value.trim()),
+                      onSaved: (value) => x = double.parse(value.trim()),
                     ),
                   ),
                   Padding(
@@ -103,13 +109,13 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
                       style: TextStyle(fontSize: 15),
                       decoration: new InputDecoration(
                           border: InputBorder.none,
-                          hintText: '请输入y轴坐标（整数）',
+                          hintText: '请输入y轴坐标',
                           icon: new Icon(
                             Icons.zoom_out_map,
                             color: Colors.grey,
                           )),
                       keyboardType: TextInputType.number,
-                      onSaved: (value) => y = int.parse(value.trim()),
+                      onSaved: (value) => y = double.parse(value.trim()),
                     ),
                   ),
                   ButtonBar(

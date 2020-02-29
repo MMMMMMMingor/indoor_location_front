@@ -1,6 +1,6 @@
 /// manage data, determine movement.
 
-import 'WiFiMessageSender.dart';
+import "MessageHandler.dart";
 
 class WiFiDataManager {
   // 暂存wifi数据，以一个列表的形式（如链表）保存wifi数据
@@ -14,7 +14,7 @@ class WiFiDataManager {
 
   // wifi数据的队列深度，列表最多可保存的wifi数据组，如果只根据当前结果及上次结果确定是否移动，那么只用2
   // 暂时还不用到
-  final int _MAXIMUM_QUEUE_DEPTH = 2;
+  final int _maximumQueueDepth = 2;
 
   final int gap = 5;
 
@@ -34,8 +34,8 @@ class WiFiDataManager {
   }
 
   // 往列表里添加刚刚采集到的wifi数据
-  void addData(Map<String, int> newData){
-    if(_wifiData.length == _MAXIMUM_QUEUE_DEPTH) {
+  void addData(Map<String, int> newData) {
+    if (_wifiData.length == _maximumQueueDepth) {
       /// 当队列长度为2才适用
       // _wifiData = _wifiData.reversed;
       _wifiData[0] = _wifiData[1];
@@ -44,7 +44,7 @@ class WiFiDataManager {
     _wifiData.add(newData);
 
     /// 如果移动了更新列表并且发送实时信息
-    if(_determineMovement()) {
+    if (_determineMovement()) {
       if (sender != null) sender.sendMessage(_wifiData.last);
     }
   }
@@ -55,7 +55,7 @@ class WiFiDataManager {
 
     // 允许信号强度在一定范围波动
     final int gap = 2;
-    bool ismove = false;
+    bool ismove = false, has = false;
 
     // 两个用来比较的工具人
     Map<String, int> map1 = _wifiData.elementAt(0);
@@ -64,15 +64,22 @@ class WiFiDataManager {
     while (it1.moveNext()) {
       MapEntry entry1 = it1.current;
       if (map2.containsKey(entry1.key)) {
+        has = true;
         if (map2[entry1.key] >= 0 || entry1.value >= 0) continue;
-        if ((map2[entry1.key] <= -60 && (map2[entry1.key] - entry1.value).abs() > gap * 2)
-        || (map2[entry1.key] > -60 && (map2[entry1.key] - entry1.value).abs() > gap)) {
+        if ((map2[entry1.key] <= -60 &&
+                (map2[entry1.key] - entry1.value).abs() > gap * 2) ||
+            (map2[entry1.key] > -60 &&
+                (map2[entry1.key] - entry1.value).abs() > gap)) {
           ismove = true;
           break;
         }
       }
     }
 
-    return ismove;
+    /// if map2 is all new AP, then just return true to indicate movement
+    if (has)
+      return ismove;
+    else
+      return true;
   }
 }

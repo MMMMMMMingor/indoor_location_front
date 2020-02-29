@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:my_flutter_app1/model/APMeta.dart';
 import 'package:my_flutter_app1/pages/login.dart';
 import 'pages/tabs.dart';
 import 'pages/Go.dart';
@@ -13,10 +14,10 @@ class MyApp extends StatelessWidget {
   final routes = {
     '/Go': (context) => Go(),
     '/Search_result': (context) => Search_result(),
-    '/GoExpand': (context) => GoExpand(),
+    '/GoExpand': (context, {APMeta arguments}) => GoExpand(arguments: arguments),
     '/login': (context) => LoginPage(),
-    '/tab' : (context) => MyPage(),
-    '/createLocationService' : (context) => CreateLocationService(),
+    '/tab': (context) => MyPage(),
+    '/createLocationService': (context) => CreateLocationService(),
     // '/friendTab': (context) => friendTab(),
     // '/search':(context,{arguments})=>SearchPage(arguments:arguments),//传参数的
   };
