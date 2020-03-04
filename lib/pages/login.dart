@@ -20,8 +20,13 @@ class _LoginPageState extends State<LoginPage> {
 
   String _userName;
   String _password;
+  bool _logining = false;
 
   void _onLogin() async {
+    setState(() {
+      this._logining = true;
+    });
+
     final form = _formKey.currentState;
     form.save();
 
@@ -54,8 +59,11 @@ class _LoginPageState extends State<LoginPage> {
       Toast.show("登录失败", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
     }
-  }
 
+    setState(() {
+      this._logining = false;
+    });
+  }
 
   Widget _showUserInput() {
     return Padding(
@@ -137,15 +145,13 @@ class _LoginPageState extends State<LoginPage> {
               height: 70,
               padding: const EdgeInsets.fromLTRB(35, 30, 35, 0),
               child: OutlineButton(
-                child: Text('登录'),
+                child: this._logining ? Text('登录中。。。') : Text('登录'),
                 textColor: Colors.orange,
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
                 borderSide: BorderSide(color: Colors.orange, width: 1),
-                onPressed: () {
-                  _onLogin();
-                },
+                onPressed: this._logining ? null : _onLogin,
               ),
             ),
             Container(

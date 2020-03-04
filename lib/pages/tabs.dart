@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'tabs/home.dart';
 import 'tabs/mine.dart';
 import 'tabs/search.dart';
@@ -18,6 +19,8 @@ class _MyPageState extends State<MyPage> {
   ];
 
   Widget build(BuildContext context) {
+    ScreenUtil.init(context, width: 750, height: 1334, allowFontScaling: true);
+
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       body: this._pageList[this._currentIndex],

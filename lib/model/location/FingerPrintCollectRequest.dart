@@ -1,20 +1,15 @@
 class FingerPrintCollectRequest {
   int x;
   int y;
-  int ap1;
-  int ap2;
-  int ap3;
+  List<int> intensities;
   bool finish;
 
-  FingerPrintCollectRequest(
-      {this.x, this.y, this.ap1, this.ap2, this.ap3, this.finish});
+  FingerPrintCollectRequest({this.x, this.y, this.intensities, this.finish});
 
   FingerPrintCollectRequest.fromJson(Map<String, dynamic> json) {
     x = json['x'];
     y = json['y'];
-    ap1 = json['ap1'];
-    ap2 = json['ap2'];
-    ap3 = json['ap3'];
+    intensities = json['intensities'].cast<int>();
     finish = json['finish'];
   }
 
@@ -22,9 +17,7 @@ class FingerPrintCollectRequest {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['x'] = this.x;
     data['y'] = this.y;
-    data['ap1'] = this.ap1;
-    data['ap2'] = this.ap2;
-    data['ap3'] = this.ap3;
+    data['intensities'] = this.intensities;
     data['finish'] = this.finish;
     return data;
   }

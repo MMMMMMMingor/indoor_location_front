@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_flutter_app1/model/userInfo.dart';
 import 'package:my_flutter_app1/util/jsonUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,7 +15,6 @@ class PersonInformation extends StatefulWidget {
 }
 
 class PinforState extends State<PersonInformation> {
-
   // 默认用户信息
   UserInfo _userInfo = UserInfo(
       userId: '',
@@ -32,17 +32,15 @@ class PinforState extends State<PersonInformation> {
 
     // 若 token存在
     if (token != null) {
-
       // 获取用户信息
       var response = await http.get(Config.url + "api/user/info",
           headers: {"Authorization": "Bearer $token"});
-      
+
       UserInfo info = UserInfo.fromJson(utf8JsonDecode(response.bodyBytes));
       print(info.toJson());
-      this.setState((){
+      this.setState(() {
         this._userInfo = info;
       });
-
     } else {
       Toast.show("请先登录", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
@@ -65,20 +63,19 @@ class PinforState extends State<PersonInformation> {
         ),
         body: new Column(children: <Widget>[
           new SizedBox(
-              height: 150.0,
+              height: ScreenUtil().setHeight(200),
               child: Center(
                 child: new ClipOval(
                   child: new SizedBox(
-                    width: 120,
-                    height: 120,
-                    child:
-                        this._userInfo.avatarUrl == ''
-                            ? Image.asset(
-                                "images/head_portraits.jpg",
-                                fit: BoxFit.fill,
-                              )
-                            : Image.network(this._userInfo.avatarUrl,
-                                fit: BoxFit.fill),
+                    width: ScreenUtil().setWidth(200),
+                    height: ScreenUtil().setHeight(200),
+                    child: this._userInfo.avatarUrl == ''
+                        ? Image.asset(
+                            "images/head_portraits.jpg",
+                            fit: BoxFit.fill,
+                          )
+                        : Image.network(this._userInfo.avatarUrl,
+                            fit: BoxFit.fill),
                   ),
                 ),
               )),
@@ -88,17 +85,19 @@ class PinforState extends State<PersonInformation> {
           ListTile(title: Text('职业  ${this._userInfo.vocation}')),
           ListTile(title: Text('个人标签  ${this._userInfo.personLabel}')),
           new Container(
-            width: 260,
-            height: 50,
+            height: ScreenUtil().setHeight(100),
+            width: ScreenUtil().setWidth(400),
             child: new CupertinoButton(
               child: Text('点击修改'),
               color: Colors.blue,
               disabledColor: Colors.blue,
               onPressed: () {
                 Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (context) => new ModifyInformation()));
+                  context,
+                  new MaterialPageRoute(
+                    builder: (context) => new ModifyInformation(),
+                  ),
+                );
               },
             ),
           )

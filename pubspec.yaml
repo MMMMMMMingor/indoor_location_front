@@ -36,7 +36,8 @@ dependencies:
     path: ./data_collection
   wifi_hunter: ^1.0.0
   mqtt_client: ^6.0.0
-  permission_handler: ^4.2.0+hotfix.2
+  permission_handler: ^4.2.0
+  flutter_screenutil: ^1.0.2
   
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:my_flutter_app1/model/APMeta.dart';
+import 'package:my_flutter_app1/model/location/APMeta.dart';
 import 'package:my_flutter_app1/pages/login.dart';
 import 'pages/tabs.dart';
 import 'pages/Go.dart';

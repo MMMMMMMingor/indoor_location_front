@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:indoor_data_collection/indoor_data_collection.dart';
-import 'package:my_flutter_app1/model/APMeta.dart';
-import 'package:my_flutter_app1/model/LocationRequest.dart';
-import 'package:my_flutter_app1/model/LocationResult.dart';
-import 'package:my_flutter_app1/model/LocationServiceTopicResponse.dart';
+import 'package:my_flutter_app1/model/location/APMeta.dart';
+import 'package:my_flutter_app1/model/location/LocationRequest.dart';
+import 'package:my_flutter_app1/model/location/LocationServiceTopicResponse.dart';
 import 'package:my_flutter_app1/util/commonUtil.dart';
 import 'package:my_flutter_app1/util/jsonUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
       this._indoorLocationSerivce(
           collectReponse.sendTopic,
           collectReponse.receiveTopic,
-          <String>[apMeta.bssid1, apMeta.bssid2, apMeta.bssid3]);
+          apMeta.accessPoints.map((e) => e.bssid).toList());
     }
   }
 
@@ -138,7 +138,7 @@ class _HomePageState extends State<HomePage> {
         child: Text("Go"),
         onPressed: () {
           Navigator.pushNamed(context, '/Go')
-              .then((value) => this._startLocationReuqest(value));
+              .then((value) => this._startLocationReuqest(value)); // 回调函数
         },
       ),
       resizeToAvoidBottomPadding: false,
@@ -193,7 +193,7 @@ class _HomePageState extends State<HomePage> {
                           )
                         ],
                       ),
-                      height: 50,
+                      height: ScreenUtil().setHeight(100),
                       decoration: BoxDecoration(
                           color: Colors.white70,
                           border: Border.all(color: Colors.white70, width: 2),
@@ -205,7 +205,7 @@ class _HomePageState extends State<HomePage> {
                       child: Row(
                         children: <Widget>[
                           Container(
-                            width: 40,
+                            width: ScreenUtil().setWidth(60),
                             child: Column(
                               children: <Widget>[
                                 RaisedButton(
@@ -214,7 +214,8 @@ class _HomePageState extends State<HomePage> {
                                   padding: EdgeInsets.all(5.0),
                                   child: Text(
                                     "+",
-                                    style: TextStyle(fontSize: 30),
+                                    style: TextStyle(
+                                        fontSize: ScreenUtil().setSp(50)),
                                   ),
                                 ),
                                 RaisedButton(
@@ -223,7 +224,8 @@ class _HomePageState extends State<HomePage> {
                                   padding: EdgeInsets.all(5.0),
                                   child: Text(
                                     "-",
-                                    style: TextStyle(fontSize: 30),
+                                    style: TextStyle(
+                                        fontSize: ScreenUtil().setSp(50)),
                                   ),
                                 ),
                               ],
@@ -234,16 +236,19 @@ class _HomePageState extends State<HomePage> {
                             child: Container(),
                           ),
                           Padding(
-                            padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                            padding: EdgeInsets.fromLTRB(
+                                0, 0, ScreenUtil().setWidth(5), 0),
                             child: Container(
-                              width: 40,
-                              height: 40,
+                              width: ScreenUtil().setWidth(70),
+                              height: ScreenUtil().setHeight(70),
                               decoration: BoxDecoration(
-                                  color: Colors.white70,
-                                  border:
-                                      Border.all(color: Colors.black, width: 1),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(150.0))),
+                                color: Colors.white70,
+                                border:
+                                    Border.all(color: Colors.black, width: 1),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(ScreenUtil().setWidth(150)),
+                                ),
+                              ),
                               child: Center(
                                 child: IconButton(
                                   icon: Icon(Icons.adjust),
@@ -260,7 +265,7 @@ class _HomePageState extends State<HomePage> {
                           )
                         ],
                       ),
-                      height: 150,
+                      height: ScreenUtil().setHeight(300),
                     )
                   ],
                 ),

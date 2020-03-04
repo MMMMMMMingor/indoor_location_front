@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:my_flutter_app1/model/AP.dart';
-import 'package:my_flutter_app1/model/ThreeAPs.dart';
+import 'package:my_flutter_app1/model/location/AP.dart';
+import 'package:my_flutter_app1/model/location/ThreeAPs.dart';
 import 'package:my_flutter_app1/model/successAndMessage.dart';
 import 'package:my_flutter_app1/pages/Go.dart';
 import 'package:my_flutter_app1/util/commonUtil.dart';
@@ -27,8 +27,9 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
   bool _loading = true;
 
   void sendHttpReuqest() async {
-    this._loading = true;
-    this.setState(() {});
+    this.setState(() {
+      this._loading = true;
+    });
 
     ThreeAPs _threeAPs =
         new ThreeAPs(ap1: _apList[0], ap2: _apList[1], ap3: _apList[2]);
@@ -44,15 +45,14 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
         },
         body: jsonEncode(_threeAPs));
 
-    print(response.body);
-
     SuccessAndMessage successAndMessage =
         SuccessAndMessage.fromJson(utf8JsonDecode(response.bodyBytes));
 
     print(successAndMessage.toJson());
 
-    this._loading = false;
-    this.setState(() {});
+    this.setState(() {
+      this._loading = false;
+    });
 
     if (successAndMessage.success == true) {
       Toast.show("添加成功", context,
@@ -77,84 +77,85 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
       double y;
 
       showDialog<Null>(
-          context: context,
-          builder: (BuildContext context) {
-            return Form(
-              key: _formKey,
-              child: new SimpleDialog(
-                title: new Text('填写该AP的坐标信息'),
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(15.0, 10.0, 0.0, 0.0),
-                    child: new TextFormField(
-                      maxLines: 1,
-                      autofocus: false,
-                      style: TextStyle(fontSize: 15),
-                      decoration: new InputDecoration(
-                          border: InputBorder.none,
-                          hintText: '请输入x轴坐标',
-                          icon: new Icon(
-                            Icons.zoom_out_map,
-                            color: Colors.grey,
-                          )),
-                      keyboardType: TextInputType.number,
-                      onSaved: (value) => x = double.parse(value.trim()),
-                    ),
+        context: context,
+        builder: (BuildContext context) {
+          return Form(
+            key: _formKey,
+            child: new SimpleDialog(
+              title: new Text('填写该AP的坐标信息'),
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15.0, 10.0, 0.0, 0.0),
+                  child: new TextFormField(
+                    maxLines: 1,
+                    autofocus: false,
+                    style: TextStyle(fontSize: 15),
+                    decoration: new InputDecoration(
+                        border: InputBorder.none,
+                        hintText: '请输入x轴坐标',
+                        icon: new Icon(
+                          Icons.zoom_out_map,
+                          color: Colors.grey,
+                        )),
+                    keyboardType: TextInputType.number,
+                    onSaved: (value) => x = double.parse(value.trim()),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(15.0, 10.0, 0.0, 0.0),
-                    child: new TextFormField(
-                      maxLines: 1,
-                      autofocus: false,
-                      style: TextStyle(fontSize: 15),
-                      decoration: new InputDecoration(
-                          border: InputBorder.none,
-                          hintText: '请输入y轴坐标',
-                          icon: new Icon(
-                            Icons.zoom_out_map,
-                            color: Colors.grey,
-                          )),
-                      keyboardType: TextInputType.number,
-                      onSaved: (value) => y = double.parse(value.trim()),
-                    ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15.0, 10.0, 0.0, 0.0),
+                  child: new TextFormField(
+                    maxLines: 1,
+                    autofocus: false,
+                    style: TextStyle(fontSize: 15),
+                    decoration: new InputDecoration(
+                        border: InputBorder.none,
+                        hintText: '请输入y轴坐标',
+                        icon: new Icon(
+                          Icons.zoom_out_map,
+                          color: Colors.grey,
+                        )),
+                    keyboardType: TextInputType.number,
+                    onSaved: (value) => y = double.parse(value.trim()),
                   ),
-                  ButtonBar(
-                    children: <Widget>[
-                      FlatButton(
-                        child: const Text('确定'),
-                        onPressed: () {
-                          final form = _formKey.currentState;
+                ),
+                ButtonBar(
+                  children: <Widget>[
+                    FlatButton(
+                      child: const Text('确定'),
+                      onPressed: () {
+                        final form = _formKey.currentState;
 
-                          try {
-                            form.save();
-                          } catch (e) {
-                            showMessageDialog("填写信息有误，或者不完整", context);
-                          }
+                        try {
+                          form.save();
+                        } catch (e) {
+                          showMessageDialog("填写信息有误，或者不完整", context);
+                        }
 
-                          if (x != null && y != null) {
-                            this._apList.add(
-                                new AP(bssid: bssid, ssid: ssid, x: x, y: y));
-                            Navigator.of(context).pop();
-
-                            this.setState(() {
-                              this._loading = true;
-                              detectWifi();
-                            });
-                          }
-                        },
-                      ),
-                      FlatButton(
-                        child: const Text('取消'),
-                        onPressed: () {
+                        if (x != null && y != null) {
+                          this._apList.add(
+                              new AP(bssid: bssid, ssid: ssid, x: x, y: y));
                           Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          });
+
+                          this.setState(() {
+                            this._loading = true;
+                            _detectWifi();
+                          });
+                        }
+                      },
+                    ),
+                    FlatButton(
+                      child: const Text('取消'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      );
     }
   }
 
@@ -164,7 +165,7 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
 
     this.setState(() {
       this._loading = true;
-      detectWifi();
+      _detectWifi();
     });
   }
 
@@ -220,12 +221,12 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
   }
 
   // 扫描附近的WiFi
-  void detectWifi() async {
+  void _detectWifi() async {
     WiFiInfoWrapper wifiObject = await WiFiHunter.huntRequest;
 
     this.setState(() {
       this._loading = false;
-      this._detectedWifis = new ListView.builder(
+      this._detectedWifis = ListView.builder(
           itemCount: wifiObject.bssids.length,
           itemBuilder: (BuildContext context, int position) {
             // 返回WiFi的具体描述
@@ -240,7 +241,7 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
   @override
   void initState() {
     super.initState();
-    detectWifi();
+    _detectWifi();
   }
 
   @override
@@ -260,6 +261,7 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
         )
       ],
     );
+
     return Scaffold(
         persistentFooterButtons: <Widget>[
           Offstage(
@@ -277,14 +279,13 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
           child: Icon(Icons.refresh),
           onPressed: () {
             this.setState(() {
-              this._loading = true;
-              detectWifi();
+              _detectWifi();
             });
           },
         ),
         appBar: AppBar(
-          title: Text("选择3个附近的wifi（${this._apList.length} / 3）"),
-          leading: Icon(Icons.network_wifi),
+          title: Text("至少选择3个AP（${this._apList.length} / 3）"),
+          leading: Icon(Icons.wifi),
         ),
         body: stack);
   }

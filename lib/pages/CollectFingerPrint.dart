@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:indoor_data_collection/indoor_data_collection.dart';
-import 'package:my_flutter_app1/model/APMeta.dart';
-import 'package:my_flutter_app1/model/CollectReponse.dart';
-import 'package:my_flutter_app1/model/FingerPrintCollectRequest.dart';
-import 'package:my_flutter_app1/model/ThreeAPDetail.dart';
+import 'package:my_flutter_app1/model/location/APMeta.dart';
+import 'package:my_flutter_app1/model/location/CollectReponse.dart';
+import 'package:my_flutter_app1/model/location/FingerPrintCollectRequest.dart';
+import 'package:my_flutter_app1/model/location/FingerPrintMetaDetail.dart';
 import 'package:my_flutter_app1/util/jsonUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
@@ -25,10 +25,10 @@ class CollectFingerPrint extends StatefulWidget {
 class _CollectFingerPrintState extends State<CollectFingerPrint> {
   final APMeta arguments;
   final _formKey = new GlobalKey<FormState>();
-  ThreeAPDetail _threeAPDetail;
+  FingerPrintMetaDetail _metaDetail;
   Timer _timer;
   WiFiMessageSender _sender;
-  int _ap1Signal, _ap2Signal, _ap3Signal;
+  List<int> _apSignalList;
   int x, y;
   bool _sending = false;
 
@@ -67,14 +67,13 @@ class _CollectFingerPrintState extends State<CollectFingerPrint> {
     setState(() {
       this._sending = true;
     });
-    _scanWifi(recall: (ap1, ap2, ap3) {
+    _scanWifi(recall: (list) {
       final form = _formKey.currentState;
       form.save();
       print(x);
       print(y);
-      _sender.sendMessage(new FingerPrintCollectRequest(
-              ap1: ap1, ap2: ap2, ap3: ap3, x: x, y: y, finish: false)
-          .toJson());
+      _sender.sendMessage(
+          new FingerPrintCollectRequest(intensities: list, x: x, y: y, finish: false).toJson());
 
       Toast.show("发送成功", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
@@ -82,22 +81,22 @@ class _CollectFingerPrintState extends State<CollectFingerPrint> {
     });
   }
 
-  void _scanWifi({Function(int, int, int) recall}) async {
+  void _scanWifi({Function(List<int>) recall}) async {
     WiFiInfoWrapper wifiObject = await WiFiHunter.huntRequest;
     int len = wifiObject.bssids.length;
 
-    for (int i = 0; i < len; ++i) {
-      if (wifiObject.bssids[i] == arguments.bssid1)
-        _ap1Signal = wifiObject.signalStrengths[i];
-      if (wifiObject.bssids[i] == arguments.bssid2)
-        _ap2Signal = wifiObject.signalStrengths[i];
-      if (wifiObject.bssids[i] == arguments.bssid3)
-        _ap3Signal = wifiObject.signalStrengths[i];
-    }
+    // for (int i = 0; i < len; ++i) {
+    //   if (wifiObject.bssids[i] == arguments.bssid1)
+    //     _ap1Signal = wifiObject.signalStrengths[i];
+    //   if (wifiObject.bssids[i] == arguments.bssid2)
+    //     _ap2Signal = wifiObject.signalStrengths[i];
+    //   if (wifiObject.bssids[i] == arguments.bssid3)
+    //     _ap3Signal = wifiObject.signalStrengths[i];
+    // }
 
-    if (recall != null) recall(_ap1Signal, _ap2Signal, _ap3Signal);
+    if (recall != null) recall(wifiObject.signalStrengths);
 
-    print("刷新wifi信号 \n $_ap1Signal\n $_ap2Signal\n $_ap3Signal");
+    print("刷新wifi信号 \n ${_apSignalList.join("  ")}");
     this.setState(() {});
   }
 
@@ -111,47 +110,28 @@ class _CollectFingerPrintState extends State<CollectFingerPrint> {
         Config.url + "api/location/meta/detail/${arguments.metaId}",
         headers: {"Authorization": "Bearer $token"});
 
-    ThreeAPDetail threeAPDetail =
-        ThreeAPDetail.fromJson(utf8JsonDecode(response.bodyBytes));
+    FingerPrintMetaDetail metaDetail =
+        FingerPrintMetaDetail.fromJson(utf8JsonDecode(response.bodyBytes));
 
-    print(threeAPDetail.toJson());
-    this._threeAPDetail = threeAPDetail;
+    print(metaDetail.toJson());
+    this._metaDetail = metaDetail;
 
     setState(() {});
   }
 
   Column _generateAPInfo() {
-    if (this._threeAPDetail != null) {
+
+    if (this._metaDetail != null) {
       return Column(
         children: <Widget>[
           Card(
             child: ListTile(
               leading: Icon(Icons.wifi_tethering),
-              title: Text("${this._threeAPDetail.ap1.ssid}"),
+              title: Text("${this._metaDetail.accessPoints[0].ssid}"),
               subtitle: Text(
-                  "${this._threeAPDetail.ap1.bssid}         当前信号：  ${this._ap1Signal != null ? this._ap1Signal : "无信号"}"),
+                  "${this._metaDetail.accessPoints[0].bssid}         当前信号： "),
               trailing: Text(
-                  "X: ${this._threeAPDetail.ap1.x}  Y: ${this._threeAPDetail.ap1.y} "),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: Icon(Icons.wifi_tethering),
-              title: Text("${this._threeAPDetail.ap2.ssid}"),
-              subtitle: Text(
-                  "${this._threeAPDetail.ap2.bssid}         当前信号：  ${this._ap2Signal != null ? this._ap2Signal : "无信号"}"),
-              trailing: Text(
-                  "X: ${this._threeAPDetail.ap2.x}  Y: ${this._threeAPDetail.ap2.y} "),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: Icon(Icons.wifi_tethering),
-              title: Text("${this._threeAPDetail.ap3.ssid}"),
-              subtitle: Text(
-                  "${this._threeAPDetail.ap3.bssid}         当前信号：  ${this._ap2Signal != null ? this._ap2Signal : "无信号"}"),
-              trailing: Text(
-                  "X: ${this._threeAPDetail.ap3.x}  Y: ${this._threeAPDetail.ap3.y} "),
+                  "X: ${this._metaDetail.accessPoints[0].x}  Y: ${this._metaDetail.accessPoints[0].y} "),
             ),
           ),
         ],
@@ -162,19 +142,7 @@ class _CollectFingerPrintState extends State<CollectFingerPrint> {
           Card(
             child: ListTile(
               leading: Icon(Icons.wifi_tethering),
-              title: Text("${this.arguments.bssid1}"),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: Icon(Icons.wifi_tethering),
-              title: Text("${this.arguments.bssid2}"),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: Icon(Icons.wifi_tethering),
-              title: Text("${this.arguments.bssid3}"),
+              title: Text("${this.arguments.accessPoints}"),
             ),
           ),
         ],
@@ -206,7 +174,7 @@ class _CollectFingerPrintState extends State<CollectFingerPrint> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("采集指纹信息"),
+        title: Text(this.arguments.remark),
       ),
       resizeToAvoidBottomPadding: false,
       body: Padding(

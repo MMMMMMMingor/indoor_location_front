@@ -1,4 +1,4 @@
-import 'package:my_flutter_app1/model/APMeta.dart';
+import 'package:my_flutter_app1/model/location/APMeta.dart';
 
 class APMetaPage {
   int current;

@@ -68,7 +68,7 @@ void validateLogin(BuildContext context) async {
 }
 
 // 日期解析工具
-String dateTimeAnalyze(String input) {
+String dateTimeSimpler(String input) {
   DateTime date = DateTime.parse(input);
 
   Duration diff = DateTime.now().difference(date);

@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_flutter_app1/conf/Config.dart' as Config;
-import 'package:my_flutter_app1/model/APMeta.dart';
-import 'package:my_flutter_app1/model/APMetaPage.dart';
+import 'package:my_flutter_app1/model/location/APMeta.dart';
+import 'package:my_flutter_app1/model/location/APMetaPage.dart';
 import 'package:my_flutter_app1/model/successAndMessage.dart';
 import 'package:my_flutter_app1/util/commonUtil.dart';
 import 'package:my_flutter_app1/util/jsonUtil.dart';
@@ -27,7 +28,7 @@ class GoState extends State<Go> {
           return CupertinoAlertDialog(
             title: Text("确认删除操作"),
             content: SizedBox(
-              height: 50.0,
+              height: ScreenUtil().setHeight(50.0),
               child: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
@@ -113,16 +114,13 @@ class GoState extends State<Go> {
       }
 
       for (var apMeta in apMetas) {
-        String message = dateTimeAnalyze(apMeta.createTime);
-
         listView.add(Card(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ListTile(
-                title: Text(
-                    "${apMeta.bssid1}    ${apMeta.bssid2}    ${apMeta.bssid3}"),
-                subtitle: Text("$message"),
+                title: Text("${apMeta.remark}    "),
+                subtitle: Text("${dateTimeSimpler(apMeta.createTime)}"),
                 leading: Icon(Icons.receipt),
               ),
               ButtonBar(
@@ -172,12 +170,22 @@ class GoState extends State<Go> {
 
   @override
   void initState() {
+    super.initState();
     _getdata(1, 10);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("我的指纹库信息"),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.pushNamed(context, '/createLocationService');
+        },
+      ),
       resizeToAvoidBottomPadding: false,
       body: Padding(
         padding: EdgeInsets.all(0),
@@ -187,68 +195,11 @@ class GoState extends State<Go> {
             child: Container(
               child: Column(
                 children: <Widget>[
-                  Container(
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(20, 30, 10, 20),
-                      child: Container(
-                        child: Row(
-                          children: <Widget>[
-                            Expanded(
-                              flex: 4,
-                              child: Center(
-                                child: Text(
-                                  "我的指纹库信息",
-                                  style: TextStyle(fontSize: 40.0),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Center(
-                                child: Container(
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border: Border.all(
-                                          color: Colors.black, width: 1),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(150.0))),
-                                  child: Center(
-                                    child: IconButton(
-                                        icon: Icon(Icons.add),
-                                        padding: EdgeInsets.all(4.0),
-                                        iconSize: 30,
-                                        onPressed: () {
-                                          Navigator.pushNamed(context,
-                                              '/createLocationService');
-                                        },
-                                        color: Colors.blueAccent,
-                                        highlightColor: Colors.black),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        height: 70,
-                        decoration: BoxDecoration(
-                          color: Color(0XFFF0F0F0),
-                          border: Border.all(color: Colors.white70, width: 2),
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        ),
-                      ),
-                    ),
-                    height: 130,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                    ),
-                  ),
                   SizedBox(
-                    height: 10,
+                    height: ScreenUtil().setHeight(10),
                   ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                    padding: EdgeInsets.fromLTRB(ScreenUtil().setWidth(20), 0, ScreenUtil().setWidth(20), 0),
                     child: Container(
                       child: Row(
                         children: <Widget>[
@@ -340,7 +291,7 @@ class GoState extends State<Go> {
                   Expanded(
                     flex: 1,
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
+                      padding: EdgeInsets.fromLTRB(ScreenUtil().setWidth(20), 0, 20, 10),
                       child: Container(
                         child: ListView(children: this._listView),
                         decoration: BoxDecoration(
