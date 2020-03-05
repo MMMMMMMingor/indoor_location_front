@@ -6,12 +6,12 @@ class WiFiMessageSender extends MessageHandler {
   String _wifiMessage;          // 暂存json格式化后的Wifi数据
 
   String topic;           // MQTT消息主题
-  Qos qos = Qos.exactlyOnce;
+  MqttQos qos = MqttQos.exactlyOnce;
 
   @override
   final String defaultIdentifier = "indoor-data-collection-sender";
 
-  WiFiMessageSender(String broker, this.topic, {int port = 1883, int connectTimes = 10, bool autoConnect = true, String identifier})
+  WiFiMessageSender(String broker, this.topic, {int port = 1883, this.qos, int connectTimes = 10, bool autoConnect = true, String identifier})
   : super(broker, port: port, connectTimes: connectTimes, autoConnect: autoConnect, identifier: identifier) {
     _client.onConnected = this._onConnected;
     _client.onDisconnected = this._onDisconnected;
@@ -47,7 +47,7 @@ class WiFiMessageSender extends MessageHandler {
       /// 发送消息给服务器
       final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
       builder.addString(_wifiMessage);
-      _client.publishMessage(topic, MqttQos.values[qos.index], builder.payload);
+      _client.publishMessage(topic, qos, builder.payload);
       return true;
     } on Exception catch (e) {
       log('Client Exception - $e');

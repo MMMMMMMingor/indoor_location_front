@@ -19,7 +19,7 @@ class _MyPageState extends State<MyPage> {
   ];
 
   Widget build(BuildContext context) {
-    ScreenUtil.init(context, width: 750, height: 1334, allowFontScaling: true);
+    ScreenUtil.init(context, width: 1080, height: 1920, allowFontScaling: true);
 
     return Scaffold(
       resizeToAvoidBottomPadding: false,

@@ -2,8 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_flutter_app1/model/location/AP.dart';
-import 'package:my_flutter_app1/model/location/ThreeAPs.dart';
+import 'package:my_flutter_app1/model/location/FingerPrintMetadataRequest.dart';
 import 'package:my_flutter_app1/model/successAndMessage.dart';
 import 'package:my_flutter_app1/pages/Go.dart';
 import 'package:my_flutter_app1/util/commonUtil.dart';
@@ -22,17 +23,23 @@ class CreateLocationService extends StatefulWidget {
 }
 
 class _CreateLocationServiceState extends State<CreateLocationService> {
-  List<AP> _apList = <AP>[];
+  GlobalKey<FormState> _saveKey = new GlobalKey<FormState>();
+  List<AP> _accessPoints = <AP>[];
+  String _remark = "未命名";
   ListView _detectedWifis = ListView();
+  WiFiInfoWrapper _wifiObject;
   bool _loading = true;
 
-  void sendHttpReuqest() async {
+  void _sendHttpReuqest() async {
     this.setState(() {
       this._loading = true;
     });
 
-    ThreeAPs _threeAPs =
-        new ThreeAPs(ap1: _apList[0], ap2: _apList[1], ap3: _apList[2]);
+    var saveForm = _saveKey.currentState;
+    saveForm.save();
+
+    var request = new FingerPrintMetadataRequest(
+        remark: this._remark, accessPoints: this._accessPoints);
 
     // 获取本地token
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -43,12 +50,10 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json"
         },
-        body: jsonEncode(_threeAPs));
+        body: jsonEncode(request));
 
-    SuccessAndMessage successAndMessage =
+    var successAndMessage =
         SuccessAndMessage.fromJson(utf8JsonDecode(response.bodyBytes));
-
-    print(successAndMessage.toJson());
 
     this.setState(() {
       this._loading = false;
@@ -57,12 +62,8 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
     if (successAndMessage.success == true) {
       Toast.show("添加成功", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Go()))
-          .then((value) {
-        setState(() {});
-        Navigator.of(context).pop();
-        Navigator.of(context).pop();
-      });
+
+      Navigator.of(context).pop();
     } else {
       Toast.show("添加失败，请稍后再尝试", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
@@ -71,108 +72,105 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
 
   // 添加选择的WiFi
   void addWiFi(String bssid, String ssid) {
-    if (this._apList.length < 3) {
-      final _formKey = new GlobalKey<FormState>();
-      double x;
-      double y;
+    final _formKey = new GlobalKey<FormState>();
+    double x;
+    double y;
 
-      showDialog<Null>(
-        context: context,
-        builder: (BuildContext context) {
-          return Form(
-            key: _formKey,
-            child: new SimpleDialog(
-              title: new Text('填写该AP的坐标信息'),
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(15.0, 10.0, 0.0, 0.0),
-                  child: new TextFormField(
-                    maxLines: 1,
-                    autofocus: false,
-                    style: TextStyle(fontSize: 15),
-                    decoration: new InputDecoration(
-                        border: InputBorder.none,
-                        hintText: '请输入x轴坐标',
-                        icon: new Icon(
-                          Icons.zoom_out_map,
-                          color: Colors.grey,
-                        )),
-                    keyboardType: TextInputType.number,
-                    onSaved: (value) => x = double.parse(value.trim()),
-                  ),
+    showDialog<Null>(
+      context: context,
+      builder: (BuildContext context) {
+        return Form(
+          key: _formKey,
+          child: new SimpleDialog(
+            title: new Text('填写该AP的坐标信息'),
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15.0, 10.0, 0.0, 0.0),
+                child: new TextFormField(
+                  maxLines: 1,
+                  autofocus: false,
+                  style: TextStyle(fontSize: 15),
+                  decoration: new InputDecoration(
+                      border: InputBorder.none,
+                      hintText: '请输入x轴坐标',
+                      icon: new Icon(
+                        Icons.zoom_out_map,
+                        color: Colors.grey,
+                      )),
+                  keyboardType: TextInputType.number,
+                  onSaved: (value) => x = double.parse(value.trim()),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(15.0, 10.0, 0.0, 0.0),
-                  child: new TextFormField(
-                    maxLines: 1,
-                    autofocus: false,
-                    style: TextStyle(fontSize: 15),
-                    decoration: new InputDecoration(
-                        border: InputBorder.none,
-                        hintText: '请输入y轴坐标',
-                        icon: new Icon(
-                          Icons.zoom_out_map,
-                          color: Colors.grey,
-                        )),
-                    keyboardType: TextInputType.number,
-                    onSaved: (value) => y = double.parse(value.trim()),
-                  ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15.0, 10.0, 0.0, 0.0),
+                child: new TextFormField(
+                  maxLines: 1,
+                  autofocus: false,
+                  style: TextStyle(fontSize: 15),
+                  decoration: new InputDecoration(
+                      border: InputBorder.none,
+                      hintText: '请输入y轴坐标',
+                      icon: new Icon(
+                        Icons.zoom_out_map,
+                        color: Colors.grey,
+                      )),
+                  keyboardType: TextInputType.number,
+                  onSaved: (value) => y = double.parse(value.trim()),
                 ),
-                ButtonBar(
-                  children: <Widget>[
-                    FlatButton(
-                      child: const Text('确定'),
-                      onPressed: () {
-                        final form = _formKey.currentState;
+              ),
+              ButtonBar(
+                children: <Widget>[
+                  FlatButton(
+                    child: const Text('确定'),
+                    onPressed: () {
+                      final form = _formKey.currentState;
 
-                        try {
-                          form.save();
-                        } catch (e) {
-                          showMessageDialog("填写信息有误，或者不完整", context);
-                        }
+                      try {
+                        form.save();
+                      } catch (e) {
+                        showMessageDialog("填写信息有误，或者不完整", context);
+                      }
 
-                        if (x != null && y != null) {
-                          this._apList.add(
-                              new AP(bssid: bssid, ssid: ssid, x: x, y: y));
-                          Navigator.of(context).pop();
-
-                          this.setState(() {
-                            this._loading = true;
-                            _detectWifi();
-                          });
-                        }
-                      },
-                    ),
-                    FlatButton(
-                      child: const Text('取消'),
-                      onPressed: () {
+                      if (x != null && y != null) {
+                        this
+                            ._accessPoints
+                            .add(new AP(bssid: bssid, ssid: ssid, x: x, y: y));
                         Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          );
-        },
-      );
-    }
+
+                        this.setState(() {
+                          _renderWifi();
+                        });
+                      }
+                    },
+                  ),
+                  FlatButton(
+                    child: const Text('取消'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
 // 移除已经选择的WiFi
   void removeWiFi(String bssid) {
-    this._apList.removeWhere((element) => element.bssid == bssid);
+    this._accessPoints.removeWhere((element) => element.bssid == bssid);
 
     this.setState(() {
-      this._loading = true;
-      _detectWifi();
+      _renderWifi();
     });
   }
 
   Widget getItem(String bssid, String ssid, int signalStrength) {
     bool selected = false;
 
-    for (var ap in this._apList) {
+    for (var ap in this._accessPoints) {
       if (ap.bssid == bssid) selected = true;
     }
 
@@ -222,20 +220,26 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
 
   // 扫描附近的WiFi
   void _detectWifi() async {
-    WiFiInfoWrapper wifiObject = await WiFiHunter.huntRequest;
+    _wifiObject = await WiFiHunter.huntRequest;
+    _renderWifi();
+  }
 
-    this.setState(() {
-      this._loading = false;
-      this._detectedWifis = ListView.builder(
-          itemCount: wifiObject.bssids.length,
+  void _renderWifi() async {
+    this.setState(
+      () {
+        this._loading = false;
+        this._detectedWifis = ListView.builder(
+          itemCount: _wifiObject.bssids.length,
           itemBuilder: (BuildContext context, int position) {
             // 返回WiFi的具体描述
             return getItem(
-                wifiObject.bssids[position],
-                wifiObject.ssids[position],
-                wifiObject.signalStrengths[position]);
-          });
-    });
+                _wifiObject.bssids[position],
+                _wifiObject.ssids[position],
+                _wifiObject.signalStrengths[position]);
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -264,13 +268,43 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
 
     return Scaffold(
         persistentFooterButtons: <Widget>[
+          new Form(
+            key: _saveKey,
+            child: Offstage(
+              offstage: this._accessPoints.length < 3,
+              child: new Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  new Text(
+                    '备注: ',
+                    style: new TextStyle(
+                        fontSize: ScreenUtil().setSp(30), color: Colors.grey),
+                  ),
+                  new SizedBox(
+                    width: ScreenUtil().setWidth(400),
+                    child: new TextFormField(
+                      onSaved: (value) {
+                        if (value != "") {
+                          this._remark = value;
+                        }
+                      },
+                      style: new TextStyle(
+                          fontSize: ScreenUtil().setSp(30), color: Colors.grey),
+                      decoration: new InputDecoration(hintText: this._remark),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
           Offstage(
-            offstage: this._apList.length < 3,
+            offstage: this._accessPoints.length < 3,
             child: CupertinoButton(
               color: Colors.green,
               child: Text("完成"),
               onPressed: () {
-                sendHttpReuqest();
+                _sendHttpReuqest();
               },
             ),
           ),
@@ -278,13 +312,15 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.refresh),
           onPressed: () {
+            print("refresh");
             this.setState(() {
+              this._loading = true;
               _detectWifi();
             });
           },
         ),
         appBar: AppBar(
-          title: Text("至少选择3个AP（${this._apList.length} / 3）"),
+          title: Text("至少选择3个AP（${this._accessPoints.length} / 3）"),
           leading: Icon(Icons.wifi),
         ),
         body: stack);

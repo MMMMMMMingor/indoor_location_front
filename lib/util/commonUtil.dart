@@ -64,6 +64,18 @@ void validateLogin(BuildContext context) async {
         duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
 
     Navigator.pushNamed(context, '/login');
+  } else {
+    var response = await http.get(Config.url + "api/user/info",
+        headers: {"Authorization": "Bearer $token"});
+
+    UserInfo info = UserInfo.fromJson(utf8JsonDecode(response.bodyBytes));
+
+    if (info.userId == null) {
+      Toast.show("登录已过期，请重新登录！", context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
+
+      Navigator.pushNamed(context, '/login');
+    }
   }
 }
 
@@ -72,6 +84,8 @@ String dateTimeSimpler(String input) {
   DateTime date = DateTime.parse(input);
 
   Duration diff = DateTime.now().difference(date);
+
+  if (diff.inSeconds < 30) return "刚刚";
 
   if (diff.inMinutes < 1) return "${diff.inSeconds}秒前";
 

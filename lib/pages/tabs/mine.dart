@@ -9,7 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../personInformation.dart';
 import '../friendTab.dart';
 import '../myCar.dart';
-import 'package:toast/toast.dart';
 import 'package:http/http.dart' as http;
 import '../../conf/Config.dart' as Config;
 
@@ -22,7 +21,7 @@ class _MinePageState extends State<MinePage> {
   // 用户信息
   UserInfo _userInfo;
 
-  void getUserInfo() async {
+  void _getUserInfo() async {
     // 获取本地token
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString("token");
@@ -32,8 +31,6 @@ class _MinePageState extends State<MinePage> {
         headers: {"Authorization": "Bearer $token"});
     UserInfo userInfo = UserInfo.fromJson(utf8JsonDecode(response.bodyBytes));
 //      print(userInfo.toJson());
-
-    print(userInfo.toJson());
 
     // 判断token是否过期
     this.setState(() {
@@ -45,7 +42,7 @@ class _MinePageState extends State<MinePage> {
   void initState() {
     super.initState();
     validateLogin(context);
-    getUserInfo();
+    _getUserInfo();
   }
 
   @override
@@ -146,8 +143,10 @@ class _MinePageState extends State<MinePage> {
                                   'images/head_portraits.jpg',
                                   fit: BoxFit.fill,
                                 )
-                              : Image.network(this._userInfo.avatarUrl,
-                                  fit: BoxFit.fill),
+                              : Image.network(
+                                  this._userInfo.avatarUrl,
+                                  fit: BoxFit.fill,
+                                ),
                         ),
                       ),
                       onTap: () {

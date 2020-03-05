@@ -21,66 +21,64 @@ class GoState extends State<Go> {
   List<Widget> _listView = new List();
 
   // 删除metadata
-  void deleteMetaData(String metadataId) async {
+  void _deleteMetaData(String metadataId) async {
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoAlertDialog(
-            title: Text("确认删除操作"),
-            content: SizedBox(
-              height: ScreenUtil().setHeight(50.0),
-              child: SingleChildScrollView(
-                child: ListBody(
-                  children: <Widget>[
-                    Text("您确定删除该指纹库记录吗？"),
-                  ],
-                ),
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text("确认删除操作"),
+          content: SizedBox(
+            height: ScreenUtil().setHeight(50.0),
+            child: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text("您确定删除该指纹库记录吗？"),
+                ],
               ),
             ),
-            actions: <Widget>[
-              CupertinoDialogAction(
-                child: Text("取消"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              CupertinoDialogAction(
-                child: Text("确定"),
-                onPressed: () async {
-                  // 获取本地token
-                  SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  String token = prefs.getString("token");
+          ),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: Text("取消"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text("确定"),
+              onPressed: () async {
+                // 获取本地token
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                String token = prefs.getString("token");
 
-                  // 若 token存在
-                  if (token != null) {
-                    // 获取用户信息
-                    var response = await http.delete(
-                        Config.url + "api/location/$metadataId",
-                        headers: {"Authorization": "Bearer $token"});
+                // 若 token存在
+                if (token != null) {
+                  // 获取用户信息
+                  var response = await http.delete(
+                      Config.url + "api/location/$metadataId",
+                      headers: {"Authorization": "Bearer $token"});
 
-                    SuccessAndMessage successAndMessage =
-                        SuccessAndMessage.fromJson(
-                            utf8JsonDecode(response.bodyBytes));
+                  SuccessAndMessage successAndMessage =
+                      SuccessAndMessage.fromJson(
+                          utf8JsonDecode(response.bodyBytes));
 
-                    if (successAndMessage.success == true) {
-                      this.setState(() {
-                        _getdata(1, 10);
-                      });
-                      Toast.show("删除成功", context,
-                          duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
-                      Navigator.pop(context);
-                    } else {
-                      Toast.show("删除失败", context,
-                          duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
-                      Navigator.pop(context);
-                    }
+                  if (successAndMessage.success == true) {
+                    _getdata(1, 10);
+                    Toast.show("删除成功", context,
+                        duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
+                    Navigator.pop(context);
+                  } else {
+                    Toast.show("删除失败", context,
+                        duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
+                    Navigator.pop(context);
                   }
-                },
-              ),
-            ],
-          );
-        });
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _getdata(int pageNo, int pageSize) async {
@@ -122,10 +120,13 @@ class GoState extends State<Go> {
                 title: Text("${apMeta.remark}    "),
                 subtitle: Text("${dateTimeSimpler(apMeta.createTime)}"),
                 leading: Icon(Icons.receipt),
+                trailing: Text("指纹数: ${apMeta.count}"),
               ),
               ButtonBar(
                 children: <Widget>[
-                  MaterialButton(
+                  Offstage(
+                    offstage: apMeta.count < 10,
+                    child: MaterialButton(
                       child: Text(
                         "选择",
                         style: TextStyle(color: Colors.white),
@@ -134,28 +135,34 @@ class GoState extends State<Go> {
                       colorBrightness: Brightness.light,
                       onPressed: () {
                         Navigator.pop(context, apMeta);
-                      }),
+                      },
+                    ),
+                  ),
                   MaterialButton(
-                      child: Text(
-                        "添加指纹",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      color: Colors.green,
-                      colorBrightness: Brightness.light,
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/collect',
-                            arguments: apMeta);
-                      }),
+                    child: Text(
+                      "添加指纹",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    color: Colors.green,
+                    colorBrightness: Brightness.light,
+                    onPressed: () async {
+                      await Navigator.pushNamed(context, '/collect',
+                          arguments: apMeta);
+                      await Future.delayed(new Duration(seconds: 1));
+                      this._getdata(1, 10);
+                    },
+                  ),
                   MaterialButton(
-                      child: Text(
-                        "删除",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      color: Colors.redAccent,
-                      colorBrightness: Brightness.light,
-                      onPressed: () {
-                        this.deleteMetaData(apMeta.metaId);
-                      }),
+                    child: Text(
+                      "删除",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    color: Colors.redAccent,
+                    colorBrightness: Brightness.light,
+                    onPressed: () {
+                      this._deleteMetaData(apMeta.metaId);
+                    },
+                  ),
                 ],
               ),
             ],
@@ -182,8 +189,10 @@ class GoState extends State<Go> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.pushNamed(context, '/createLocationService');
+        onPressed: () async {
+          await Navigator.pushNamed(context, '/createLocationService');
+          await Future.delayed(new Duration(seconds: 1));
+          this._getdata(1, 10);
         },
       ),
       resizeToAvoidBottomPadding: false,
@@ -199,7 +208,8 @@ class GoState extends State<Go> {
                     height: ScreenUtil().setHeight(10),
                   ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(ScreenUtil().setWidth(20), 0, ScreenUtil().setWidth(20), 0),
+                    padding: EdgeInsets.fromLTRB(ScreenUtil().setWidth(20), 0,
+                        ScreenUtil().setWidth(20), 0),
                     child: Container(
                       child: Row(
                         children: <Widget>[
@@ -291,7 +301,8 @@ class GoState extends State<Go> {
                   Expanded(
                     flex: 1,
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(ScreenUtil().setWidth(20), 0, 20, 10),
+                      padding: EdgeInsets.fromLTRB(
+                          ScreenUtil().setWidth(20), 0, 20, 10),
                       child: Container(
                         child: ListView(children: this._listView),
                         decoration: BoxDecoration(
