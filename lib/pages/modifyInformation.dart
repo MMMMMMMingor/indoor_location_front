@@ -308,8 +308,6 @@ class ModifyInformationState extends State<ModifyInformation> {
               height: ScreenUtil().setHeight(100),
             ),
             new Container(
-              width: ScreenUtil().setWidth(400),
-              height: ScreenUtil().setHeight(100),
               child: new CupertinoButton(
                 child: Text('保存修改'),
                 color: Colors.blue,

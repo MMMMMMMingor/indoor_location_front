@@ -104,7 +104,7 @@ class GoState extends State<Go> {
         listView.add(
           ListTile(
             title: Center(
-              child: Text("您未添加任何指纹信息，请点击右上方按钮进行添加。"),
+              child: Text("您未添加任何指纹信息，请点击右下方按钮进行添加。"),
             ),
             leading: Icon(Icons.help),
           ),

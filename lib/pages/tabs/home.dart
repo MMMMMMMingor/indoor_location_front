@@ -207,13 +207,15 @@ class _HomePageState extends State<HomePage> {
                     child: Row(
                       children: <Widget>[
                         Container(
-                          width: ScreenUtil().setWidth(60),
+                          width: ScreenUtil().setWidth(80),
+                          height: ScreenUtil().setHeight(300),
                           child: Column(
                             children: <Widget>[
                               RaisedButton(
                                 onPressed: () {},
                                 color: Colors.white,
                                 padding: EdgeInsets.all(5.0),
+
                                 child: Text(
                                   "+",
                                   style: TextStyle(
@@ -237,33 +239,33 @@ class _HomePageState extends State<HomePage> {
                           flex: 1,
                           child: Container(),
                         ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(
-                              0, 0, ScreenUtil().setWidth(5), 0),
-                          child: Container(
-                            width: ScreenUtil().setWidth(70),
-                            height: ScreenUtil().setHeight(70),
-                            decoration: BoxDecoration(
-                              color: Colors.white70,
-                              border: Border.all(color: Colors.black, width: 1),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(ScreenUtil().setWidth(150)),
-                              ),
-                            ),
-                            child: Center(
-                              child: IconButton(
-                                icon: Icon(Icons.adjust),
-                                padding: EdgeInsets.all(4.0),
-                                iconSize: 30,
-                                onPressed: () {
-                                  print("aaa");
-                                },
-                                color: Colors.blueAccent,
-                                highlightColor: Colors.blueAccent,
-                              ),
-                            ),
-                          ),
-                        )
+//                        Padding(
+//                          padding: EdgeInsets.fromLTRB(
+//                              0, 0, ScreenUtil().setWidth(5), 0),
+//                          child: Container(
+//                            width: ScreenUtil().setWidth(70),
+//                            height: ScreenUtil().setHeight(70),
+//                            decoration: BoxDecoration(
+//                              color: Colors.white70,
+//                              border: Border.all(color: Colors.black, width: 1),
+//                              borderRadius: BorderRadius.all(
+//                                Radius.circular(ScreenUtil().setWidth(150)),
+//                              ),
+//                            ),
+//                            child: Center(
+//                              child: IconButton(
+//                                icon: Icon(Icons.adjust),
+//                                padding: EdgeInsets.all(4.0),
+//                                iconSize: 30,
+//                                onPressed: () {
+//                                  print("aaa");
+//                                },
+//                                color: Colors.blueAccent,
+//                                highlightColor: Colors.blueAccent,
+//                              ),
+//                            ),
+//                          ),
+//                        )
                       ],
                     ),
                     height: ScreenUtil().setHeight(300),

@@ -34,7 +34,6 @@ dependencies:
   # 数采组开发的数据采集插件
   indoor_data_collection:
     path: ./data_collection
-  wifi_hunter: ^1.0.0
   mqtt_client: ^6.0.0
   permission_handler: ^4.2.0
   flutter_screenutil: ^1.0.2

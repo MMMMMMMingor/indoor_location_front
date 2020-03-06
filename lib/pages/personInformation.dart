@@ -85,8 +85,6 @@ class PinforState extends State<PersonInformation> {
           ListTile(title: Text('职业  ${this._userInfo.vocation}')),
           ListTile(title: Text('个人标签  ${this._userInfo.personLabel}')),
           new Container(
-            height: ScreenUtil().setHeight(100),
-            width: ScreenUtil().setWidth(400),
             child: new CupertinoButton(
               child: Text('点击修改'),
               color: Colors.blue,

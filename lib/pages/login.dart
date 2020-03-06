@@ -124,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
             Form(
               key: _formKey,
               child: Container(
-                height: 130,
+                height: 140,
                 padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
                 child: Card(
                   child: Column(

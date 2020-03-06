@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_flutter_app1/model/friendPage.dart';
 import 'package:my_flutter_app1/util/jsonUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -76,7 +77,7 @@ class _FriendTabState extends State<FriendTab> {
                                           new Text(
                                             // list[position].name,
                                             list[position].createTime,
-                                            style: TextStyle(fontSize: 18.0),
+                                            style: TextStyle(fontSize: ScreenUtil().setSp(22.0)),
                                           ),
                                         ],
                                       ))))),
@@ -99,14 +100,14 @@ class _FriendTabState extends State<FriendTab> {
                                             MainAxisAlignment.start,
                                         children: <Widget>[
                                           new Text(
-                                            "状态是: ",
-                                            style: TextStyle(fontSize: 16.0),
+                                            "状态: ",
+                                            style: TextStyle(fontSize: ScreenUtil().setSp(25.0)),
                                           ),
                                           //获取当前朋友的位置信息
                                           new Text(
                                             // list[position].job,
                                             list[position].friendId,
-                                            style: TextStyle(fontSize: 16.0),
+                                            style: TextStyle(fontSize: ScreenUtil().setSp(22.0)),
                                           ),
                                         ],
                                       ))))),
