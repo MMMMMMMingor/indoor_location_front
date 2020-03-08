@@ -63,12 +63,19 @@ class _CollectFingerPrintState extends State<CollectFingerPrint> {
 
   // 发送指纹
   void _sendFingerPrint() {
+    final form = _formKey.currentState;
+    form.save();
+
+    if (x < 0 || y < 0) {
+      Toast.show("坐标不能为负数", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
+      return;
+    }
+
     setState(() {
       this._sending = true;
     });
     _scanWifi(recall: (list) {
-      final form = _formKey.currentState;
-      form.save();
       _sender.sendMessage(new FingerPrintCollectRequest(
               intensities: list, x: x, y: y, finish: false)
           .toJson());

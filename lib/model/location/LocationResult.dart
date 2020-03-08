@@ -1,6 +1,6 @@
 class LocationResult {
-  int x;
-  int y;
+  double x;
+  double y;
 
   LocationResult({this.x, this.y});
 
