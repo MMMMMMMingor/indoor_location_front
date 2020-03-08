@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_flutter_app1/model/successAndMessage.dart';
 import 'package:my_flutter_app1/util/jsonUtil.dart';
@@ -112,7 +113,8 @@ class _RegisterPageState extends State<RegisterPage> {
               "verifyCode": ${this._verifyCode.text}
             }
           """);
-    SuccessAndMessage data = SuccessAndMessage.fromJson(utf8JsonDecode(response.bodyBytes));
+    SuccessAndMessage data =
+        SuccessAndMessage.fromJson(utf8JsonDecode(response.bodyBytes));
 
     if (data.success == true) {
       Toast.show("注册成功", context,
@@ -124,7 +126,6 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-
   Widget _showUserInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(15.0, 10.0, 0.0, 0.0),
@@ -133,7 +134,7 @@ class _RegisterPageState extends State<RegisterPage> {
         focusNode: _usernameFocus,
         keyboardType: TextInputType.emailAddress,
         autofocus: false,
-        style: TextStyle(fontSize: 15),
+        style: TextStyle(fontSize: ScreenUtil().setSp(33)),
         decoration: new InputDecoration(
             border: InputBorder.none,
             hintText: '请输入帐号',
@@ -154,7 +155,7 @@ class _RegisterPageState extends State<RegisterPage> {
         obscureText: true,
         autofocus: false,
         focusNode: _passwordFocus,
-        style: TextStyle(fontSize: 15),
+        style: TextStyle(fontSize: ScreenUtil().setSp(33)),
         decoration: new InputDecoration(
             border: InputBorder.none,
             hintText: '请输入密码',
@@ -175,7 +176,7 @@ class _RegisterPageState extends State<RegisterPage> {
         obscureText: true,
         autofocus: false,
         focusNode: _confirmPasswordFocus,
-        style: TextStyle(fontSize: 15),
+        style: TextStyle(fontSize: ScreenUtil().setSp(33)),
         decoration: new InputDecoration(
             border: InputBorder.none,
             hintText: '请再输入密码',
@@ -194,11 +195,11 @@ class _RegisterPageState extends State<RegisterPage> {
         child: new Form(
             child: new Row(children: <Widget>[
           new SizedBox(
-            width: 220,
+            width: ScreenUtil().setWidth(500),
             child: TextFormField(
               maxLines: 1,
               autofocus: false,
-              style: TextStyle(fontSize: 15),
+              style: TextStyle(fontSize: ScreenUtil().setSp(33)),
               focusNode: _emailFocus,
               decoration: new InputDecoration(
                   border: InputBorder.none,
@@ -211,9 +212,10 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ),
           new Container(
-            height: 50,
+            height: ScreenUtil().setHeight(100),
             child: new OutlineButton(
-              child: Text(_start == 60 ? "获取验证码" : "$_start S"),
+              child: Text(_start == 60 ? "获取验证码" : "$_start S",
+                  style: TextStyle(fontSize: ScreenUtil().setSp(33))),
               textColor: Colors.orange,
               color: Colors.white,
               shape: RoundedRectangleBorder(
@@ -236,7 +238,7 @@ class _RegisterPageState extends State<RegisterPage> {
         controller: _verifyCode,
         keyboardType: TextInputType.number,
         autofocus: false,
-        style: TextStyle(fontSize: 15),
+        style: TextStyle(fontSize: ScreenUtil().setSp(33)),
         decoration: new InputDecoration(
             border: InputBorder.none,
             hintText: '验证码',
