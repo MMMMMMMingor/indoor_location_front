@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:indoor_data_collection/indoor_data_collection.dart';
 import 'package:mqtt_client/mqtt_client.dart';
+import 'package:my_flutter_app1/model/location/AP.dart';
 import 'package:my_flutter_app1/model/location/APMeta.dart';
 import 'package:my_flutter_app1/model/location/LocationRequest.dart';
 import 'package:my_flutter_app1/model/location/LocationResult.dart';
@@ -18,6 +19,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_flutter_app1/conf/Config.dart' as Config;
+import 'package:wifi_hunter/wifi_hunter.dart'; // ap数据采集所需插件
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -36,13 +38,36 @@ class _HomePageState extends State<HomePage> {
 
   _HomePageState();
 
+  Future<List<int>> _scanAPs(List<AP> aps) async {
+    WiFiInfoWrapper wifiObject = await WiFiHunter.huntRequest;
+
+    int apLen = aps.length;
+    int wifiLen = wifiObject.bssids.length;
+    List<int> intensities = new List(apLen);
+
+    L1:
+    for (int i = 0; i < apLen; ++i) {
+      for (int j = 0; j < wifiLen; ++j) {
+        if (aps[i].bssid == wifiObject.bssids[j]) {
+          intensities[i] = wifiObject.signalStrengths[j];
+          continue L1;
+        }
+      }
+      intensities[i] = 0;
+    }
+
+    return Future.value(intensities);
+  }
+
   // 定位服务
   void _indoorLocationSerivce(
-      String sendTopic, String receiveTopic, List<String> apList) async {
+      String sendTopic, String receiveTopic, List<AP> apList) async {
     this._sender = new WiFiMessageSender(Config.MQTT_SERVER_IP, sendTopic,
         qos: MqttQos.exactlyOnce);
     this._receiver = new MessageReceiver(Config.MQTT_SERVER_IP);
     this._receiver.connect();
+
+    // 订阅数据
     this._receiver.subscribe(
       receiveTopic,
       callOnData: (value) {
@@ -54,10 +79,11 @@ class _HomePageState extends State<HomePage> {
       },
     );
 
-    this._timer = Timer.periodic(Duration(seconds: 7), (timer) {
+    // 发送数据
+    this._timer = Timer.periodic(Duration(seconds: 7), (timer) async {
       print(timer.tick);
       _sender.sendMessage(new LocationRequest(
-              intensities: [timer.tick, 20, 20, 20], finish: false)
+              intensities: await _scanAPs(apList), finish: false)
           .toJson());
     });
   }
@@ -80,7 +106,7 @@ class _HomePageState extends State<HomePage> {
       print(topics.toJson());
 
       this._indoorLocationSerivce(topics.sendTopic, topics.receiveTopic,
-          apMeta.accessPoints.map((e) => e.bssid).toList());
+          apMeta.accessPoints);
     }
   }
 
@@ -154,13 +180,13 @@ class _HomePageState extends State<HomePage> {
           child: Text("Go"),
           onPressed: () {
             Navigator.pushNamed(context, '/Go').then((value) async {
+              _stopLocationRequest();
               if (value != null) {
-                _stopLocationRequest();
                 this._drawBoard.clear();
                 for (var ap in (value as APMeta).accessPoints) {
                   this._drawBoard.addAP(ap.x, ap.y);
-                  // this._startLocationReuqest(value);
                 }
+                this._startLocationReuqest(value);
               }
             }); // 回调函数
           },
@@ -241,7 +267,7 @@ class _HomePageState extends State<HomePage> {
                                   children: <Widget>[
                                     RaisedButton(
                                       onPressed: () {
-                                        this._drawBoard.setScaleFactor(3 / 2);
+                                        this._drawBoard.setScaleFactor(5 / 4);
                                       },
                                       color: Colors.white,
                                       padding: EdgeInsets.all(5.0),
@@ -253,7 +279,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     RaisedButton(
                                       onPressed: () {
-                                        this._drawBoard.setScaleFactor(2 / 3);
+                                        this._drawBoard.setScaleFactor(4 / 5);
                                       },
                                       color: Colors.white,
                                       padding: EdgeInsets.all(5.0),
