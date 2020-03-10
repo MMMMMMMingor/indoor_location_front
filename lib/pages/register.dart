@@ -267,7 +267,7 @@ class _RegisterPageState extends State<RegisterPage> {
           children: <Widget>[
             Container(
               padding: const EdgeInsets.only(top: 30),
-              height: 170,
+              height: ScreenUtil().setHeight(200),
               child: Image.network(
                   'https://i2.hdslb.com/bfs/face/bcdf640faa16ebaacea1d4c930baabaec9087a80.jpg@50w_50h.webp',
                   fit: BoxFit.fitHeight),
@@ -275,7 +275,7 @@ class _RegisterPageState extends State<RegisterPage> {
             Form(
               key: _formKey,
               child: Container(
-                height: 310,
+                height: ScreenUtil().setHeight(800),
                 padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
                 child: Card(
                   child: Column(
@@ -311,7 +311,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
             Container(
-              height: 70,
+              height: ScreenUtil().setHeight(150),
               padding: const EdgeInsets.fromLTRB(35, 30, 35, 0),
               child: OutlineButton(
                 child: Text('注册'),

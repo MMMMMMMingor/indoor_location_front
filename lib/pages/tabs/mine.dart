@@ -32,7 +32,6 @@ class _MinePageState extends State<MinePage> {
     UserInfo userInfo = UserInfo.fromJson(utf8JsonDecode(response.bodyBytes));
 //      print(userInfo.toJson());
 
-    // 判断token是否过期
     this.setState(() {
       this._userInfo = userInfo;
     });

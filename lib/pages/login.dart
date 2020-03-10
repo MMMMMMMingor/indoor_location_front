@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_flutter_app1/model/jwtToken.dart';
 import 'package:my_flutter_app1/pages/register.dart';
@@ -72,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
         maxLines: 1,
         keyboardType: TextInputType.emailAddress,
         autofocus: false,
-        style: TextStyle(fontSize: 15),
+        style: TextStyle(fontSize: ScreenUtil().setSp(30)),
         decoration: new InputDecoration(
             border: InputBorder.none,
             hintText: '请输入帐号',
@@ -92,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
         maxLines: 1,
         obscureText: true,
         autofocus: false,
-        style: TextStyle(fontSize: 15),
+        style: TextStyle(fontSize: ScreenUtil().setSp(30)),
         decoration: new InputDecoration(
             border: InputBorder.none,
             hintText: '请输入密码',
@@ -116,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
           children: <Widget>[
             Container(
               padding: const EdgeInsets.only(top: 30),
-              height: 220,
+              height: ScreenUtil().setHeight(400),
               child: Image.network(
                   'https://i2.hdslb.com/bfs/face/bcdf640faa16ebaacea1d4c930baabaec9087a80.jpg@50w_50h.webp',
                   fit: BoxFit.fitHeight),
@@ -124,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
             Form(
               key: _formKey,
               child: Container(
-                height: 140,
+                height: ScreenUtil().setHeight(330),
                 padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
                 child: Card(
                   child: Column(
@@ -142,7 +143,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             Container(
-              height: 70,
+              height: ScreenUtil().setHeight(200),
               padding: const EdgeInsets.fromLTRB(35, 30, 35, 0),
               child: OutlineButton(
                 child: this._logining ? Text('登录中。。。') : Text('登录'),
@@ -155,8 +156,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             Container(
-              height: 70,
-              padding: const EdgeInsets.fromLTRB(300, 30, 35, 0),
+              height: ScreenUtil().setHeight(200),
+              padding: const EdgeInsets.fromLTRB(200, 30, 35, 0),
               child: GestureDetector(
                   child: new Text(
                     '注册账号',

@@ -48,9 +48,9 @@ class _HomePageState extends State<HomePage> {
       callOnData: (value) {
         Toast.show(value, context,
             duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
-        var result =  LocationResult.fromJson(jsonDecode(value));
+        var result = LocationResult.fromJson(jsonDecode(value));
         print(result);
-        this._drawBoard.addOffset(result.x, result.y);
+        this._drawBoard.addTrace(result.x, result.y);
       },
     );
 
@@ -79,9 +79,7 @@ class _HomePageState extends State<HomePage> {
 
       print(topics.toJson());
 
-      this._indoorLocationSerivce(
-          topics.sendTopic,
-          topics.receiveTopic,
+      this._indoorLocationSerivce(topics.sendTopic, topics.receiveTopic,
           apMeta.accessPoints.map((e) => e.bssid).toList());
     }
   }
@@ -129,19 +127,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void getLocationPermission() async {
-    var permission = await PermissionHandler()
-        .checkPermissionStatus(PermissionGroup.location);
-
-    if (permission != PermissionStatus.granted) {
-      await PermissionHandler().requestPermissions([PermissionGroup.location]);
-    }
+  void _getPermission() async {
+    await PermissionHandler().requestPermissions(
+        [PermissionGroup.location, PermissionGroup.notification]);
   }
 
   @override
   void initState() {
     super.initState();
-    getLocationPermission();
+    _getPermission();
     validateLogin(context);
   }
 
@@ -159,14 +153,26 @@ class _HomePageState extends State<HomePage> {
         floatingActionButton: FloatingActionButton(
           child: Text("Go"),
           onPressed: () {
-            Navigator.pushNamed(context, '/Go')
-                .then((value) => this._startLocationReuqest(value)); // 回调函数
+            Navigator.pushNamed(context, '/Go').then((value) async {
+              if (value != null) {
+                _stopLocationRequest();
+                this._drawBoard.clear();
+                for (var ap in (value as APMeta).accessPoints) {
+                  this._drawBoard.addAP(ap.x, ap.y);
+                  // this._startLocationReuqest(value);
+                }
+              }
+            }); // 回调函数
           },
         ),
         resizeToAvoidBottomPadding: false,
         body: Stack(
           children: <Widget>[
-            _drawBoard,
+            Container(
+              child: _drawBoard,
+              height: ScreenUtil().setHeight(1600),
+              width: ScreenUtil().setWidth(1080),
+            ),
             Container(
               child: Center(
                 child: Padding(
@@ -178,26 +184,30 @@ class _HomePageState extends State<HomePage> {
                           child: Row(
                             children: <Widget>[
                               Expanded(
-                                  flex: 5,
-                                  child: Form(
-                                    key: searchKey,
-                                    child: TextFormField(
-                                        obscureText: true,
-                                        validator: (value) {
-                                          return value.length < 1
-                                              ? _dialog()
-                                              : Navigator.pushNamed(
-                                                  context, '/Search_result');
-                                        },
-                                        onSaved: (value) {
-                                          _search = value;
-                                        },
-                                        style: TextStyle(fontSize: 25),
-                                        decoration: InputDecoration.collapsed(
-                                            border: InputBorder.none,
-                                            hintText: "搜索地址",
-                                            hintStyle: TextStyle())),
-                                  )),
+                                flex: 5,
+                                child: Form(
+                                  key: searchKey,
+                                  child: TextFormField(
+                                    obscureText: true,
+                                    validator: (value) {
+                                      return value.length < 1
+                                          ? _dialog()
+                                          : Navigator.pushNamed(
+                                              context, '/Search_result');
+                                    },
+                                    onSaved: (value) {
+                                      _search = value;
+                                    },
+                                    style: TextStyle(
+                                        fontSize: ScreenUtil().setSp(50)),
+                                    decoration: InputDecoration.collapsed(
+                                      border: InputBorder.none,
+                                      hintText: "搜索地址",
+                                      hintStyle: TextStyle(),
+                                    ),
+                                  ),
+                                ),
+                              ),
                               Expanded(
                                 flex: 1,
                                 child: IconButton(
@@ -212,7 +222,7 @@ class _HomePageState extends State<HomePage> {
                               )
                             ],
                           ),
-                          height: ScreenUtil().setHeight(100),
+                          height: ScreenUtil().setHeight(150),
                           decoration: BoxDecoration(
                               color: Colors.white70,
                               border:
@@ -231,7 +241,7 @@ class _HomePageState extends State<HomePage> {
                                   children: <Widget>[
                                     RaisedButton(
                                       onPressed: () {
-                                        this._drawBoard.setScaleFactor(2);
+                                        this._drawBoard.setScaleFactor(3 / 2);
                                       },
                                       color: Colors.white,
                                       padding: EdgeInsets.all(5.0),
@@ -243,7 +253,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     RaisedButton(
                                       onPressed: () {
-                                        this._drawBoard.setScaleFactor(0.5);
+                                        this._drawBoard.setScaleFactor(2 / 3);
                                       },
                                       color: Colors.white,
                                       padding: EdgeInsets.all(5.0),

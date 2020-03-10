@@ -172,7 +172,7 @@ class _CollectFingerPrintState extends State<CollectFingerPrint> {
                 Container(
                   constraints: BoxConstraints.expand(
                     height: ScreenUtil().setHeight(140),
-                    width: ScreenUtil().setWidth(300),
+                    width: ScreenUtil().setWidth(400),
                   ),
                   child: Card(
                     child: TextFormField(
@@ -201,7 +201,7 @@ class _CollectFingerPrintState extends State<CollectFingerPrint> {
                 Container(
                   constraints: BoxConstraints.expand(
                     height: ScreenUtil().setHeight(140),
-                    width: ScreenUtil().setWidth(300),
+                    width: ScreenUtil().setWidth(400),
                   ),
                   child: Card(
                     child: TextFormField(
