@@ -8,7 +8,7 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="client"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/indoor_location">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -34,4 +34,5 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
     </application>
+
 </manifest>

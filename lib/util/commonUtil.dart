@@ -48,7 +48,7 @@ Future<UserInfo> getUserInfo() async {
 
     UserInfo info = UserInfo.fromJson(utf8JsonDecode(response.bodyBytes));
 
-    return new Future(() => info);
+    return Future.value(info);
   }
 }
 

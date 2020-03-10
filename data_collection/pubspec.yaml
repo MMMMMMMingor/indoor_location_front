@@ -22,10 +22,10 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
-flutter:
-  plugin:
-    androidPackage: com.example.indoor_data_collection
-    pluginClass: IndoorDataCollectionPlugin
+#flutter:
+#  plugin:
+#    androidPackage: com.example.indoor_data_collection
+#    pluginClass: IndoorDataCollectionPlugin
 
   # To add assets to your package, add an assets section, like this:
   # assets:

@@ -20,7 +20,7 @@ class SearchPage extends StatelessWidget {
             // new Icon(icon, color: color,size: 30.0,),
             new IconButton(
                 icon: Icon(icon),
-                iconSize: ScreenUtil().setHeight(50),
+                iconSize: ScreenUtil().setHeight(100),
                 onPressed: () {
                   print(label);
                 },
@@ -30,7 +30,7 @@ class SearchPage extends StatelessWidget {
               child: new Text(
                 label,
                 style: new TextStyle(
-                  fontSize: ScreenUtil().setSp(20),
+                  fontSize: ScreenUtil().setSp(30),
                   fontWeight: FontWeight.w400,
                   color: color,
                 ),

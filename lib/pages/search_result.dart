@@ -1,18 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-class Search_result extends StatefulWidget {
-  Search_result({Key key, this.title}) : super(key: key);
+class SearchResult extends StatefulWidget {
+  SearchResult({Key key, this.title}) : super(key: key);
   final String title;
 
   @override
-  _Search_result createState() => _Search_result();
+  SearchResultState createState() => SearchResultState();
 }
 
-class _Search_result extends State<Search_result> {
+class SearchResultState extends State<SearchResult> {
   @override
   Widget build(BuildContext context) {
 
-    // TODO: implement build
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       body: Container(

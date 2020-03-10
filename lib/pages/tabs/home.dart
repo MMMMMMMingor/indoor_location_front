@@ -105,8 +105,8 @@ class _HomePageState extends State<HomePage> {
 
       print(topics.toJson());
 
-      this._indoorLocationSerivce(topics.sendTopic, topics.receiveTopic,
-          apMeta.accessPoints);
+      this._indoorLocationSerivce(
+          topics.sendTopic, topics.receiveTopic, apMeta.accessPoints);
     }
   }
 
@@ -154,8 +154,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _getPermission() async {
-    await PermissionHandler().requestPermissions(
-        [PermissionGroup.location, PermissionGroup.notification]);
+    await PermissionHandler().requestPermissions([PermissionGroup.location]);
   }
 
   @override

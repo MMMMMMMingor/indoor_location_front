@@ -13,7 +13,7 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   final routes = {
     '/Go': (context) => Go(),
-    '/Search_result': (context) => Search_result(),
+    '/Search_result': (context) => SearchResult(),
     '/collect': (context, {APMeta arguments}) => CollectFingerPrint(arguments: arguments),
     '/login': (context) => LoginPage(),
     '/tab': (context) => MyPage(),

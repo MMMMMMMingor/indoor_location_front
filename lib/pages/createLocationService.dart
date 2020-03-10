@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_flutter_app1/model/location/AP.dart';
 import 'package:my_flutter_app1/model/location/FingerPrintMetadataRequest.dart';
 import 'package:my_flutter_app1/model/successAndMessage.dart';
-import 'package:my_flutter_app1/pages/Go.dart';
 import 'package:my_flutter_app1/util/commonUtil.dart';
 import 'package:my_flutter_app1/util/jsonUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
