@@ -32,8 +32,9 @@ dependencies:
   image_cropper: ^1.2.1
   simple_image_crop: ^0.1.3
   # 数采组开发的数据采集插件
-  indoor_data_collection:
-    path: ./data_collection
+#  indoor_data_collection:
+#    path: ./data_collection
+  wifi_hunter: ^1.0.2
   mqtt_client: ^6.0.0
   permission_handler: ^4.4.0
   flutter_screenutil: ^1.0.2

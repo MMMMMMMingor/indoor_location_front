@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:indoor_data_collection/indoor_data_collection.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:my_flutter_app1/model/location/APMeta.dart';
 import 'package:my_flutter_app1/model/location/CollectReponse.dart';
 import 'package:my_flutter_app1/model/location/FingerPrintCollectRequest.dart';
+import 'package:my_flutter_app1/util/data_collect/MessageHandler.dart';
 import 'package:my_flutter_app1/util/jsonUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
