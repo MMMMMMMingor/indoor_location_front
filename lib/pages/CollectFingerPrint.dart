@@ -231,7 +231,7 @@ class _CollectFingerPrintState extends State<CollectFingerPrint> {
                   color: Colors.blue,
                   textColor: Colors.white,
                   child: _sending ? const Text('发送中。。。') : const Text('发送'),
-                  visualDensity: VisualDensity(horizontal: 1.0, vertical: 0.5),
+//                  visualDensity: VisualDensity(horizontal: 1.0, vertical: 0.5),
                   onPressed: _sending ? null : _sendFingerPrint,
                 ),
               ],

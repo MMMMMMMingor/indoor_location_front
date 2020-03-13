@@ -193,8 +193,8 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
                     color: Colors.blue,
                     child: const Text('选择WiFi'),
                     onPressed: () => addWiFi(bssid, ssid),
-                    visualDensity:
-                        VisualDensity(horizontal: 0.0, vertical: 0.0),
+//                    visualDensity:
+//                        VisualDensity(horizontal: 0.0, vertical: 0.0),
                   ),
                 ),
                 Offstage(
@@ -202,8 +202,8 @@ class _CreateLocationServiceState extends State<CreateLocationService> {
                   child: FlatButton(
                     color: Colors.red,
                     child: const Text('取消选择'),
-                    visualDensity:
-                        VisualDensity(horizontal: 1.0, vertical: 0.5),
+//                    visualDensity:
+//                        VisualDensity(horizontal: 1.0, vertical: 0.5),
                     onPressed: () {
                       removeWiFi(bssid);
                     },

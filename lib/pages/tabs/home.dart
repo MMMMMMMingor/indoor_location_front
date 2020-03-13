@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
   Timer _timer;
   MessageReceiver _receiver;
   WiFiMessageSender _sender;
-  DrawBoard _drawBoard;
+  DrawBoard _drawBoard = DrawBoard();
 
   _HomePageState();
 
@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   // 向服务器请求定位服务资源
-  void _startLocationReuqest(APMeta apMeta) async {
+  void _startLocationRequest(APMeta apMeta) async {
     if (apMeta != null) {
       // 获取本地token
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -172,22 +172,19 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    this._drawBoard = DrawBoard();
-
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           child: Text("Go"),
-          onPressed: () {
-            Navigator.pushNamed(context, '/Go').then((value) async {
-              _stopLocationRequest();
-              if (value != null) {
-                this._drawBoard.clear();
-                for (var ap in (value as APMeta).accessPoints) {
-                  this._drawBoard.addAP(ap.x, ap.y);
-                }
-                this._startLocationReuqest(value);
+          onPressed: () async {
+            var value = await Navigator.pushNamed(context, '/Go');
+            _stopLocationRequest();
+            if (value != null) {
+              this._drawBoard.clear();
+              for (var ap in (value as APMeta).accessPoints) {
+                this._drawBoard.addAP(ap.x, ap.y);
               }
-            }); // 回调函数
+              this._startLocationRequest(value);
+            }
           },
         ),
         resizeToAvoidBottomPadding: false,
@@ -266,7 +263,7 @@ class _HomePageState extends State<HomePage> {
                                   children: <Widget>[
                                     RaisedButton(
                                       onPressed: () {
-                                        this._drawBoard.setScaleFactor(5 / 4);
+                                        this._drawBoard.setScaleFactor(4 / 3);
                                       },
                                       color: Colors.white,
                                       padding: EdgeInsets.all(5.0),
@@ -278,7 +275,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     RaisedButton(
                                       onPressed: () {
-                                        this._drawBoard.setScaleFactor(4 / 5);
+                                        this._drawBoard.setScaleFactor(3 / 4);
                                       },
                                       color: Colors.white,
                                       padding: EdgeInsets.all(5.0),

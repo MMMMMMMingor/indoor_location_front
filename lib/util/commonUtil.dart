@@ -39,7 +39,6 @@ void showMessageDialog(String message, BuildContext context) {
 Future<UserInfo> getUserInfo() async {
   // 获取token
   String token = await getToken();
-
   // 若 token存在
   if (token != null) {
     // 获取用户信息
@@ -48,7 +47,7 @@ Future<UserInfo> getUserInfo() async {
 
     UserInfo info = UserInfo.fromJson(utf8JsonDecode(response.bodyBytes));
 
-    return Future.value(info);
+    return info;
   }
 }
 

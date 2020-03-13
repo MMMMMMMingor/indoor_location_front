@@ -17,15 +17,15 @@ class DrawBoard extends StatefulWidget {
 
 class DrawBoardState extends State<DrawBoard> {
   List<Offset> _points = <Offset>[];
-  int ap_len = 0;
-  double _scaleFactor = 10; // 缩放因子
+  int apLen = 0;
+  double _scaleFactor = 5; // 缩放因子
   Offset _startPosition;
   double _xOffsetTotal = 0;
   double _yOffsetTotal = 0;
 
   void clear() {
-    ap_len = 0;
-    _scaleFactor = 10;
+    apLen = 0;
+    _scaleFactor = 5;
     _xOffsetTotal = 0;
     _yOffsetTotal = 0;
     _points = <Offset>[];
@@ -34,7 +34,7 @@ class DrawBoardState extends State<DrawBoard> {
   void addAP(double x, double y) {
     var offset = Offset(x * _scaleFactor, y * _scaleFactor);
     this.setState(() {
-      ap_len = ap_len + 1;
+      apLen = apLen + 1;
       _points = new List.from(_points)..add(offset);
     });
   }
@@ -77,17 +77,17 @@ class DrawBoardState extends State<DrawBoard> {
             RenderBox referenceBox = context.findRenderObject();
             var endPosition =
                 referenceBox.globalToLocal(details.globalPosition);
-            double x_offset = (endPosition.dx - _startPosition.dx);
-            double y_offset = (endPosition.dy - _startPosition.dy);
+            double xOffset = (endPosition.dx - _startPosition.dx);
+            double yOffset = (endPosition.dy - _startPosition.dy);
 
-            _xOffsetTotal += x_offset;
-            _yOffsetTotal += y_offset;
+            _xOffsetTotal += xOffset;
+            _yOffsetTotal += yOffset;
 
             // print("$_xOffsetTotal       $_yOffsetTotal");
 
             _startPosition = endPosition;
 
-            offset(x_offset, y_offset);
+            offset(xOffset, yOffset);
           },
           onLongPress: () {
             addTrace(10, 10);
@@ -95,7 +95,7 @@ class DrawBoardState extends State<DrawBoard> {
         ),
         CustomPaint(
           painter: new SignaturePainter(
-              _points.sublist(0, ap_len), _points.sublist(ap_len)),
+              _points.sublist(0, apLen), _points.sublist(apLen)),
         ),
       ],
     );
@@ -105,7 +105,7 @@ class DrawBoardState extends State<DrawBoard> {
 
 class SignaturePainter extends CustomPainter {
   final List<Offset> points; // Offset:一个不可变的2D浮点偏移。
-  final List<Offset> ap_points; // Offset:一个不可变的2D浮点偏移。
+  final List<Offset> apPoints; // Offset:一个不可变的2D浮点偏移。
 
   Paint ap = new Paint() //设置ap笔的属性
     ..color = Colors.red
@@ -121,24 +121,24 @@ class SignaturePainter extends CustomPainter {
     ..strokeWidth = 12.0
     ..strokeJoin = StrokeJoin.bevel;
 
-  Paint cur_p = new Paint() //设置当前位置笔的属性
+  Paint curP = new Paint() //设置当前位置笔的属性
     ..color = Colors.yellow
     ..strokeCap = StrokeCap.round
     ..isAntiAlias = true
     ..strokeWidth = 12.0
     ..strokeJoin = StrokeJoin.bevel;
 
-  SignaturePainter(this.ap_points, this.points);
+  SignaturePainter(this.apPoints, this.points);
 
   void paint(Canvas canvas, Size size) {
     //画ap
-    canvas.drawPoints(PointMode.points, ap_points, ap);
+    canvas.drawPoints(PointMode.points, apPoints, ap);
 
     //画路径
     if (points.length >= 1) {
       canvas.drawPoints(
           PointMode.points, points.sublist(0, points.length - 1), p);
-      canvas.drawPoints(PointMode.points, [points.last], cur_p);
+      canvas.drawPoints(PointMode.points, [points.last], curP);
     }
   }
 
