@@ -1,14 +1,19 @@
-## 华南理工大学室内定位系统前台
+## Flutter开发的基于WiFi的室内定位客户端
 
-技术栈：
- - flutter
- 
- 
-# 分工：
-林添：主界面
-林俊涛：完成发现页面
-孙瑞洲：完成个人页面
-陈泽鈞：完成登录注册界面和完善设计其他页面。
+### 定位功能使用流程
 
-### 说明：
-data_collection 文件夹为数采组的代码
+<div align=center>
+
+![授予打开WiFi的权限](https://raw.githubusercontent.com/MMMMMMMingor/picbed/master/20200323235318.png)
+
+1: 前往 设置 -> 应用管理 -> 权限 授予打开WiFi的权限
+
+![添加指纹](https://raw.githubusercontent.com/MMMMMMMingor/picbed/master/20200323235458.png)
+
+2: 添加指纹，用于后续的定位。
+
+
+![调用定位服务](https://raw.githubusercontent.com/MMMMMMMingor/picbed/master/20200323235642.png)
+
+3: 调用定位服务，红色点为AP，黄色点为用户当前位置，绿色点为已经走过的路径
+
