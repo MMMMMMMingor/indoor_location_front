@@ -10,11 +10,13 @@ import 'package:my_flutter_app1/model/location/APMeta.dart';
 import 'package:my_flutter_app1/model/location/LocationRequest.dart';
 import 'package:my_flutter_app1/model/location/LocationResult.dart';
 import 'package:my_flutter_app1/model/location/LocationServiceTopicResponse.dart';
-import 'package:my_flutter_app1/pages/widget/DrawBoard.dart';
+import 'package:my_flutter_app1/provider/mapProvider.dart';
 import 'package:my_flutter_app1/util/commonUtil.dart';
 import 'package:my_flutter_app1/util/data_collect/MessageHandler.dart';
 import 'package:my_flutter_app1/util/jsonUtil.dart';
+import 'package:my_flutter_app1/widget/LocationMap.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 import 'package:http/http.dart' as http;
@@ -34,7 +36,6 @@ class _HomePageState extends State<HomePage> {
   Timer _timer;
   MessageReceiver _receiver;
   WiFiMessageSender _sender;
-  DrawBoard _drawBoard = DrawBoard();
 
   _HomePageState();
 
@@ -73,9 +74,10 @@ class _HomePageState extends State<HomePage> {
       callOnData: (value) {
         Toast.show(value, context,
             duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
-        var result = LocationResult.fromJson(jsonDecode(value));
-        print(result);
-        this._drawBoard.addTrace(result.x, result.y);
+        var loactionResult = LocationResult.fromJson(jsonDecode(value));
+        print(loactionResult);
+        Provider.of<MapProvider>(context, listen: false)
+            .addTrace(loactionResult.x, loactionResult.y);
       },
     );
 
@@ -173,165 +175,144 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButton: FloatingActionButton(
-          child: Text("Go"),
-          onPressed: () async {
-            var value = await Navigator.pushNamed(context, '/Go');
-            _stopLocationRequest();
-            if (value != null) {
-              this._drawBoard.clear();
-              for (var ap in (value as APMeta).accessPoints) {
-                this._drawBoard.addAP(ap.x, ap.y);
-              }
-              this._startLocationRequest(value);
+      floatingActionButton: FloatingActionButton(
+        child: Text("Go"),
+        onPressed: () async {
+          var value = await Navigator.pushNamed(context, '/Go');
+          _stopLocationRequest();
+          if (value != null) {
+            Provider.of<MapProvider>(context, listen: false).clear();
+            for (var ap in (value as APMeta).accessPoints) {
+              Provider.of<MapProvider>(context, listen: false)
+                  .addAP(ap.x, ap.y);
             }
-          },
-        ),
-        resizeToAvoidBottomPadding: false,
-        body: Stack(
-          children: <Widget>[
-            Container(
-              child: _drawBoard,
-              height: ScreenUtil().setHeight(1600),
-              width: ScreenUtil().setWidth(1080),
-            ),
-            Container(
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Container(
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                flex: 5,
-                                child: Form(
-                                  key: searchKey,
-                                  child: TextFormField(
-                                    obscureText: true,
-                                    validator: (value) {
-                                      return value.length < 1
-                                          ? _dialog()
-                                          : Navigator.pushNamed(
-                                              context, '/Search_result');
-                                    },
-                                    onSaved: (value) {
-                                      _search = value;
-                                    },
-                                    style: TextStyle(
-                                        fontSize: ScreenUtil().setSp(50)),
-                                    decoration: InputDecoration.collapsed(
-                                      border: InputBorder.none,
-                                      hintText: "搜索地址",
-                                      hintStyle: TextStyle(),
-                                    ),
+            this._startLocationRequest(value);
+          }
+        },
+      ),
+      resizeToAvoidBottomPadding: false,
+      body: Stack(
+        children: <Widget>[
+          Container(
+            child: LocationMap(),
+            height: ScreenUtil().setHeight(1600),
+            width: ScreenUtil().setWidth(1080),
+          ),
+          Container(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: Container(
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              flex: 5,
+                              child: Form(
+                                key: searchKey,
+                                child: TextFormField(
+                                  obscureText: true,
+                                  validator: (value) {
+                                    return value.length < 1
+                                        ? _dialog()
+                                        : Navigator.pushNamed(
+                                            context, '/Search_result');
+                                  },
+                                  onSaved: (value) {
+                                    _search = value;
+                                  },
+                                  style: TextStyle(
+                                      fontSize: ScreenUtil().setSp(50)),
+                                  decoration: InputDecoration.collapsed(
+                                    border: InputBorder.none,
+                                    hintText: "搜索地址",
+                                    hintStyle: TextStyle(),
                                   ),
                                 ),
                               ),
-                              Expanded(
-                                flex: 1,
-                                child: IconButton(
-                                    icon: Icon(Icons.search),
-                                    padding: EdgeInsets.all(10.0),
-                                    iconSize: 30,
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: IconButton(
+                                icon: Icon(Icons.search),
+                                padding: EdgeInsets.all(10.0),
+                                iconSize: 30,
+                                onPressed: () {
+                                  search();
+                                },
+                                color: Colors.blueAccent,
+                                highlightColor: Colors.black,
+                              ),
+                            )
+                          ],
+                        ),
+                        height: ScreenUtil().setHeight(150),
+                        decoration: BoxDecoration(
+                          color: Colors.white70,
+                          border: Border.all(color: Colors.white70, width: 2),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10.0),
+                          ),
+                        ),
+                      ),
+                      Expanded(flex: 2, child: Container()),
+                      Container(
+                        child: Row(
+                          children: <Widget>[
+                            Container(
+                              width: ScreenUtil().setWidth(80),
+                              height: ScreenUtil().setHeight(300),
+                              child: Column(
+                                children: <Widget>[
+                                  RaisedButton(
                                     onPressed: () {
-                                      search();
+                                      Provider.of<MapProvider>(context,
+                                              listen: false)
+                                          .setScaleFactor(4 / 3);
                                     },
-                                    color: Colors.blueAccent,
-                                    highlightColor: Colors.black),
-                              )
-                            ],
-                          ),
-                          height: ScreenUtil().setHeight(150),
-                          decoration: BoxDecoration(
-                              color: Colors.white70,
-                              border:
-                                  Border.all(color: Colors.white70, width: 2),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.0))),
-                        ),
-                        Expanded(flex: 2, child: Container()),
-                        Container(
-                          child: Row(
-                            children: <Widget>[
-                              Container(
-                                width: ScreenUtil().setWidth(80),
-                                height: ScreenUtil().setHeight(300),
-                                child: Column(
-                                  children: <Widget>[
-                                    RaisedButton(
-                                      onPressed: () {
-                                        this._drawBoard.setScaleFactor(4 / 3);
-                                      },
-                                      color: Colors.white,
-                                      padding: EdgeInsets.all(5.0),
-                                      child: Text(
-                                        "+",
-                                        style: TextStyle(
-                                            fontSize: ScreenUtil().setSp(50)),
-                                      ),
+                                    color: Colors.white,
+                                    padding: EdgeInsets.all(5.0),
+                                    child: Text(
+                                      "+",
+                                      style: TextStyle(
+                                          fontSize: ScreenUtil().setSp(50)),
                                     ),
-                                    RaisedButton(
-                                      onPressed: () {
-                                        this._drawBoard.setScaleFactor(3 / 4);
-                                      },
-                                      color: Colors.white,
-                                      padding: EdgeInsets.all(5.0),
-                                      child: Text(
-                                        "-",
-                                        style: TextStyle(
-                                            fontSize: ScreenUtil().setSp(50)),
-                                      ),
+                                  ),
+                                  RaisedButton(
+                                    onPressed: () {
+                                      Provider.of<MapProvider>(context,
+                                              listen: false)
+                                          .setScaleFactor(3 / 4);
+                                    },
+                                    color: Colors.white,
+                                    padding: EdgeInsets.all(5.0),
+                                    child: Text(
+                                      "-",
+                                      style: TextStyle(
+                                          fontSize: ScreenUtil().setSp(50)),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                              Expanded(
-                                flex: 1,
-                                child: Container(),
-                              ),
-                              // Padding(
-                              //   padding: EdgeInsets.fromLTRB(
-                              //       0, 0, ScreenUtil().setWidth(5), 0),
-                              //   child: Container(
-                              //     width: ScreenUtil().setWidth(70),
-                              //     height: ScreenUtil().setHeight(70),
-                              //     decoration: BoxDecoration(
-                              //       color: Colors.white70,
-                              //       border: Border.all(
-                              //           color: Colors.black, width: 1),
-                              //       borderRadius: BorderRadius.all(
-                              //         Radius.circular(
-                              //             ScreenUtil().setWidth(150)),
-                              //       ),
-                              //     ),
-                              //     child: Center(
-                              //       child: IconButton(
-                              //         icon: Icon(Icons.adjust),
-                              //         padding: EdgeInsets.all(4.0),
-                              //         iconSize: 30,
-                              //         onPressed: () {
-                              //           Navigator.pushNamed(context, "/draw");
-                              //         },
-                              //         color: Colors.blueAccent,
-                              //         highlightColor: Colors.blueAccent,
-                              //       ),
-                              //     ),
-                              //   ),
-                              // )
-                            ],
-                          ),
-                          height: ScreenUtil().setHeight(300),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Container(),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                        height: ScreenUtil().setHeight(300),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 }

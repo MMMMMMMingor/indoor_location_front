@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:my_flutter_app1/model/location/APMeta.dart';
 import 'package:my_flutter_app1/pages/login.dart';
+import 'package:my_flutter_app1/provider/mapProvider.dart';
+import 'package:provider/provider.dart';
 import 'pages/tabs.dart';
 import 'pages/Go.dart';
 import 'pages/search_result.dart';
@@ -14,7 +16,8 @@ class MyApp extends StatelessWidget {
   final routes = {
     '/Go': (context) => Go(),
     '/Search_result': (context) => SearchResult(),
-    '/collect': (context, {APMeta arguments}) => CollectFingerPrint(arguments: arguments),
+    '/collect': (context, {APMeta arguments}) =>
+        CollectFingerPrint(arguments: arguments),
     '/login': (context) => LoginPage(),
     '/tab': (context) => MyPage(),
     '/createLocationService': (context) => CreateLocationService(),
@@ -24,7 +27,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => MapProvider()), // 注册 provider
+      ],
+      child: MaterialApp(
         theme: ThemeData.light(),
         home: MyPage(),
         onGenerateRoute: (RouteSettings settings) {
@@ -44,6 +51,8 @@ class MyApp extends StatelessWidget {
             }
           }
           return null;
-        });
+        },
+      ),
+    );
   }
 }
