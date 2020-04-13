@@ -39,6 +39,8 @@ dependencies:
   permission_handler: ^4.4.0
   flutter_screenutil: ^1.0.2
   provider: ^4.0.5
+  web_socket_channel: ^1.1.0
+  corsac_jwt: ^0.2.1
   
 dev_dependencies:
   flutter_test:

@@ -9,3 +9,6 @@ final String url = "http://39.99.131.85/";
 final String MQTT_SERVER_IP = "39.99.131.85";
 // ignore: non_constant_identifier_names
 final int MQTT_SERVER_PORT = 1883;
+
+// final String WEBSOCKET_URL = "ws://39.99.131.85/api/locatoin/service/";
+final String WEBSOCKET_URL = "ws://192.168.0.109:8080/api/locatoin/service/";

@@ -1,3 +1,4 @@
+import 'package:corsac_jwt/corsac_jwt.dart';
 import 'package:flutter/material.dart';
 import 'package:my_flutter_app1/model/userInfo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -64,12 +65,11 @@ void validateLogin(BuildContext context) async {
 
     Navigator.pushNamed(context, '/login');
   } else {
-    var response = await http.get(Config.url + "api/user/info",
-        headers: {"Authorization": "Bearer $token"});
+    var decodeToken = new JWT.parse(token);
+    int nowTimeStamp = (DateTime.now().millisecondsSinceEpoch / 1000).toInt();
+    int expTimeStamp = decodeToken.claims["exp"];
 
-    UserInfo info = UserInfo.fromJson(utf8JsonDecode(response.bodyBytes));
-
-    if (info.userId == null) {
+    if (nowTimeStamp > expTimeStamp) {
       Toast.show("登录已过期，请重新登录！", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
 

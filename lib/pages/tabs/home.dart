@@ -21,6 +21,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_flutter_app1/conf/Config.dart' as Config;
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:wifi_hunter/wifi_hunter.dart'; // ap数据采集所需插件
 
 class HomePage extends StatefulWidget {
