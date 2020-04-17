@@ -43,7 +43,7 @@ class MapProvider with ChangeNotifier {
         x * _scaleFactor + _xOffsetTotal, y * _scaleFactor + _yOffsetTotal);
     print(offset);
     _points = new List.from(_points)..add(offset);
-
+print(_points);
     notifyListeners();
   }
 

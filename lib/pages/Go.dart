@@ -146,8 +146,10 @@ class GoState extends State<Go> {
                     color: Colors.green,
                     colorBrightness: Brightness.light,
                     onPressed: () async {
-                      await Navigator.pushNamed(context, '/collect',
-                          arguments: apMeta);
+                      // await Navigator.pushNamed(context, '/collect',
+                      //     arguments: apMeta);
+                      //跳到新的指纹收集页面
+                           await Navigator.pushNamed(context, '/collect');
                       await Future.delayed(new Duration(seconds: 1));
                       this._getdata(1, 10);
                     },

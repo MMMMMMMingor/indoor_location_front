@@ -9,6 +9,7 @@ import 'pages/Go.dart';
 import 'pages/search_result.dart';
 import 'pages/CollectFingerPrint.dart';
 import 'pages/createLocationService.dart';
+import 'pages/NewFingerCollect.dart';
 
 void main() => runApp(MyApp());
 
@@ -16,8 +17,9 @@ class MyApp extends StatelessWidget {
   final routes = {
     '/Go': (context) => Go(),
     '/Search_result': (context) => SearchResult(),
-    '/collect': (context, {APMeta arguments}) =>
-        CollectFingerPrint(arguments: arguments),
+    // '/collect': (context, {APMeta arguments}) =>
+    //     CollectFingerPrint(arguments: arguments),
+    '/collect':(context)=> NewFingerCollect(),
     '/login': (context) => LoginPage(),
     '/tab': (context) => MyPage(),
     '/createLocationService': (context) => CreateLocationService(),
