@@ -149,7 +149,7 @@ class GoState extends State<Go> {
                       // await Navigator.pushNamed(context, '/collect',
                       //     arguments: apMeta);
                       //跳到新的指纹收集页面
-                           await Navigator.pushNamed(context, '/collect');
+                           await Navigator.pushNamed(context, '/collect',arguments: apMeta);
                       await Future.delayed(new Duration(seconds: 1));
                       this._getdata(1, 10);
                     },

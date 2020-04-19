@@ -7,11 +7,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:my_flutter_app1/model/location/AP.dart';
 import 'package:my_flutter_app1/model/location/APMeta.dart';
+import 'package:my_flutter_app1/model/location/CollectReponse.dart';
 import 'package:my_flutter_app1/model/location/LocationRequest.dart';
 import 'package:my_flutter_app1/model/location/LocationResult.dart';
 import 'package:my_flutter_app1/model/location/LocationServiceTopicResponse.dart';
 import 'package:my_flutter_app1/provider/mapProvider.dart';
 import 'package:my_flutter_app1/util/commonUtil.dart';
+import 'package:my_flutter_app1/model/location/FingerPrintCollectRequest.dart';
 import 'package:my_flutter_app1/util/data_collect/MessageHandler.dart';
 import 'package:my_flutter_app1/util/jsonUtil.dart';
 import 'package:my_flutter_app1/widget/LocationMap.dart';
@@ -24,135 +26,180 @@ import 'package:my_flutter_app1/conf/Config.dart' as Config;
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:wifi_hunter/wifi_hunter.dart'; // ap数据采集所需插件
 import 'package:my_flutter_app1/widget/CollectFingerMap.dart';
+import 'package:my_flutter_app1/provider/fingetProvider.dart';
 
 class NewFingerCollect extends StatefulWidget {
-  NewFingerCollect({Key key}) : super(key: key);
+   final APMeta arguments;
+  NewFingerCollect({Key key, this.arguments}) : super(key: key);
+
 
   @override
-  _NewFingerCollectState createState() => _NewFingerCollectState();
+  _NewFingerCollectState createState() => _NewFingerCollectState(arguments: arguments);
 }
 
 class _NewFingerCollectState extends State<NewFingerCollect> {
-  GlobalKey<FormState> searchKey = new GlobalKey<FormState>();
-  String _search;
+  final APMeta arguments;
+  final _formKey = new GlobalKey<FormState>();
   Timer _timer;
-  MessageReceiver _receiver;
   WiFiMessageSender _sender;
+  int x, y;
+  bool _sending = false;
 
-  _NewFingerCollectState();
+  _NewFingerCollectState({this.arguments});
 
-  Future<List<int>> _scanAPs(List<AP> aps) async {
-    WiFiInfoWrapper wifiObject = await WiFiHunter.huntRequest;
+  void _startCollectRequest() async {
+    // 获取本地token
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString("token");
 
-    int apLen = aps.length;
-    int wifiLen = wifiObject.bssids.length;
-    List<int> intensities = new List(apLen);
+    // 获取用户信息
+    var response = await http.post(
+        Config.url + "api/location/collect/${arguments.metaId}",
+        headers: {"Authorization": "Bearer $token"});
 
-    L1:
-    for (int i = 0; i < apLen; ++i) {
-      for (int j = 0; j < wifiLen; ++j) {
-        if (aps[i].bssid == wifiObject.bssids[j]) {
-          intensities[i] = wifiObject.signalStrengths[j];
-          continue L1;
-        }
-      }
-      intensities[i] = 0;
-    }
+    var collectReponse =
+        CollectReponse.fromJson(utf8JsonDecode(response.bodyBytes));
 
-    return Future.value(intensities);
-  }
+    print(collectReponse.toJson());
 
-  // 定位服务
-  void _indoorLocationSerivce(
-      String sendTopic, String receiveTopic, List<AP> apList) async {
-    this._sender = new WiFiMessageSender(Config.MQTT_SERVER_IP, sendTopic,
+    // 初始化sender
+    _sender = new WiFiMessageSender(Config.MQTT_SERVER_IP, collectReponse.topic,
         qos: MqttQos.exactlyOnce);
-    this._receiver = new MessageReceiver(Config.MQTT_SERVER_IP);
-    this._receiver.connect();
-
-    // 订阅数据
-    this._receiver.subscribe(
-      receiveTopic,
-      callOnData: (value) {
-        Toast.show(value, context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
-        var loactionResult = LocationResult.fromJson(jsonDecode(value));
-        print(loactionResult);
-        Provider.of<MapProvider>(context, listen: false)
-            .addTrace(loactionResult.x, loactionResult.y);
-      },
-    );
-
-    // 发送数据
-    this._timer = Timer.periodic(Duration(seconds: 7), (timer) async {
-      print(timer.tick);
-      _sender.sendMessage(new LocationRequest(
-              intensities: await _scanAPs(apList), finish: false)
-          .toJson());
-    });
   }
 
-  // 向服务器请求定位服务资源
-  void _startLocationRequest(APMeta apMeta) async {
-    if (apMeta != null) {
-      // 获取本地token
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String token = prefs.getString("token");
-
-      // 获取用户信息
-      var response = await http.post(
-          Config.url + "api/location/service/${apMeta.metaId}",
-          headers: {"Authorization": "Bearer $token"});
-
-      var topics = LocationServiceTopicResponse.fromJson(
-          utf8JsonDecode(response.bodyBytes));
-
-      print(topics.toJson());
-
-      this._indoorLocationSerivce(
-          topics.sendTopic, topics.receiveTopic, apMeta.accessPoints);
-    }
-  }
-
-  // 请求服务器关闭定位服务资源
-  void _stopLocationRequest() async {
+  void _stopCollectRequest() async {
     if (this._sender != null) {
-      _receiver.disconnect();
-      _timer.cancel();
-      await this
-          ._sender
-          .sendMessage(new LocationRequest(finish: true).toJson());
+      var request = new FingerPrintCollectRequest(finish: true);
+      await this._sender.sendMessage(request.toJson());
       this._sender.disconnect();
     }
   }
 
- 
+  // 发送指纹
+  void _sendFingerPrint(lastx,lasty) {
+    final form = _formKey.currentState;
+    form.save();
+    print(lastx);
+x= int.parse(lastx.toString());
+y=int.parse(lasty.toString());
+print(x);
+print(y);
 
-  void _getPermission() async {
-    await PermissionHandler().requestPermissions([PermissionGroup.location]);
+    if (x < 0 || y < 0) {
+      Toast.show("坐标不能为负数", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
+      return;
+    }
+
+    setState(() {
+      this._sending = true;
+    });
+    _scanWifi(recall: (list) {
+      _sender.sendMessage(new FingerPrintCollectRequest(
+              intensities: list, x: x, y: y, finish: false)
+          .toJson());
+
+      Toast.show("发送成功", context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
+      setState(() {
+        this._sending = false;
+      });
+    });
   }
 
+  void _scanWifi({Function(List<int>) recall}) async {
+    WiFiInfoWrapper wifiObject = await WiFiHunter.huntRequest;
+
+    if (recall != null) {
+      var aps = this.arguments.accessPoints;
+      int apLen = aps.length;
+      int wifiLen = wifiObject.bssids.length;
+      List<int> intensities = new List(apLen);
+
+      L1:
+      for (int i = 0; i < apLen; ++i) {
+        for (int j = 0; j < wifiLen; ++j) {
+          if (aps[i].bssid == wifiObject.bssids[j]) {
+            intensities[i] = wifiObject.signalStrengths[j];
+            continue L1;
+          }
+        }
+        intensities[i] = 0;
+      }
+
+      print(intensities);
+
+      recall(intensities);
+    }
+  }
+
+  List<Widget> _generateAPInfo() {
+    var result = <Widget>[];
+
+    for (var ap in this.arguments.accessPoints) {
+      result.add(
+        Card(
+          child: ListTile(
+            leading: Icon(Icons.wifi_tethering),
+            title: Text("${ap.ssid}"),
+            subtitle: Text("${ap.bssid}"),
+            trailing: Text("X: ${ap.x}  Y: ${ap.y} "),
+          ),
+        ),
+      );
+    }
+
+    return result;
+  }
+
+void showTips(){
+   Toast.show("请长按屏幕添加指纹", context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
+}
   @override
   void initState() {
     super.initState();
-    _getPermission();
-    validateLogin(context);
-  }
- 
-  @override
-  void dispose() {
-    super.dispose();
-    _stopLocationRequest();
+    // _timer = Timer.periodic(Duration(seconds: 10), (timer) async {
+    //   print(timer.tick);
+    //   _scanWifi(arguments.bssid1, arguments.bssid2, arguments.bssid3);
+    //   this.setState(() {});
+    // });
+    _scanWifi();
+    _startCollectRequest();
+showTips();
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    if (this._timer != null) this._timer.cancel();
+    _stopCollectRequest();
+  }
+  @override
   Widget build(BuildContext context) {
-    return Container(
+        FingerProvider fingerProvider = Provider.of<FingerProvider>(context);//引入的单实例
+    return Scaffold(
+       appBar: AppBar(
+        title: Text("添加指纹"),
+      ),
+        floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () async {
+         _sendFingerPrint(fingerProvider.lastPosition.dx, fingerProvider.lastPosition.dy);
+
+        },
+      ),
+        resizeToAvoidBottomPadding: false,
+        body: Padding(padding: EdgeInsets.all(0),
+            child: Container(
             child: CollectFingerMap(),
             color: Colors.white,
-            height: ScreenUtil().setHeight(1600),
-            width: ScreenUtil().setWidth(1080),
-          );
+   
+          ),
+        ),
+      
+    );
+  
      
   }
 }

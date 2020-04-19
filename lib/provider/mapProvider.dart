@@ -8,6 +8,7 @@ class MapProvider with ChangeNotifier {
   Offset _startPosition;
   double _xOffsetTotal = 0; // X轴偏移量
   double _yOffsetTotal = 0; // Y轴偏移量
+    Offset _lastPosition;//用户上一次长按的Offset
 
   List<Offset> get points => _points;
   int get apLen => _apLen;
@@ -15,7 +16,9 @@ class MapProvider with ChangeNotifier {
   Offset get startPosition => _startPosition;
   double get xOffsetTotal => _xOffsetTotal;
   double get yOffsetTotal => _yOffsetTotal;
+  Offset get lastPosition => _lastPosition;
 
+  set lastPosition(Offset offset)=>this._lastPosition=offset;
   set startPosition(Offset offset) => this._startPosition = offset;
   set xOffsetTotal(double x) => this._xOffsetTotal = x;
   set yOffsetTotal(double y) => this._yOffsetTotal = y;

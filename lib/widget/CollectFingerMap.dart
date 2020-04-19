@@ -6,11 +6,12 @@ import 'package:my_flutter_app1/provider/mapProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:toast/toast.dart';
+import 'package:my_flutter_app1/provider/fingetProvider.dart';
 
 class CollectFingerMap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    MapProvider mapProvider = Provider.of<MapProvider>(context);
+    FingerProvider fingerProvider = Provider.of<FingerProvider>(context);
     List<Offset> points= <Offset>[];
     return new Stack(
       children: [
@@ -18,7 +19,7 @@ class CollectFingerMap extends StatelessWidget {
         GestureDetector(
           onPanDown: (details) {
             RenderBox referenceBox = context.findRenderObject();
-            mapProvider.startPosition =
+            fingerProvider.startPosition =
                 referenceBox.globalToLocal(details.globalPosition);
           },
           onPanUpdate: (DragUpdateDetails details) {
@@ -26,26 +27,27 @@ class CollectFingerMap extends StatelessWidget {
             RenderBox referenceBox = context.findRenderObject();
             var endPosition =
                 referenceBox.globalToLocal(details.globalPosition);
-            double xOffset = (endPosition.dx - mapProvider.startPosition.dx);
-            double yOffset = (endPosition.dy - mapProvider.startPosition.dy);
+            double xOffset = (endPosition.dx - fingerProvider.startPosition.dx);
+            double yOffset = (endPosition.dy - fingerProvider.startPosition.dy);
 
-            mapProvider.xOffsetTotal += xOffset;
-            mapProvider.yOffsetTotal += yOffset;
+            fingerProvider.xOffsetTotal += xOffset;
+            fingerProvider.yOffsetTotal += yOffset;
 
             // print("$_xOffsetTotal       $_yOffsetTotal");
 
-            mapProvider.startPosition = endPosition;
+            fingerProvider.startPosition = endPosition;
 
-            mapProvider.offset(xOffset, yOffset);
+            fingerProvider.offset(xOffset, yOffset);
           },
-          // onLongPress: () {
-          //   mapProvider.addTrace(10, 10);
-          // },
+       
           onLongPressEnd: (details){
              RenderBox referenceBox = context.findRenderObject();
              var pointPosition=referenceBox.globalToLocal(details.globalPosition);
-           mapProvider.addTrace(pointPosition.dx, pointPosition.dy);
-        
+          // fingerProvider.addTrace(pointPosition.dx, pointPosition.dy);
+
+//把用户长按的指纹，存在mapprovider里面的lastPosition,上一个指纹信息
+           fingerProvider.lastPosition=pointPosition;
+        //显示长按下去的指纹信息
             Toast.show(pointPosition.toString(), context,
             duration: Toast.LENGTH_SHORT, gravity: Toast.TOP);
           },
