@@ -76,14 +76,15 @@ class _NewFingerCollectState extends State<NewFingerCollect> {
   }
 
   // 发送指纹
-  void _sendFingerPrint(lastx,lasty) {
-    final form = _formKey.currentState;
-    form.save();
+  void _sendFingerPrint(double lastx,double lasty) {
+    // final form = _formKey.currentState;
+    // form.save();
+    print("确认的指纹坐标");
     print(lastx);
-x= int.parse(lastx.toString());
-y=int.parse(lasty.toString());
-print(x);
-print(y);
+this.x= lastx.floor();
+this.y=lasty.floor();
+print(this.x);
+print(this.y);
 
     if (x < 0 || y < 0) {
       Toast.show("坐标不能为负数", context,
