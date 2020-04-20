@@ -9,6 +9,8 @@ import 'pages/Go.dart';
 import 'pages/search_result.dart';
 import 'pages/CollectFingerPrint.dart';
 import 'pages/createLocationService.dart';
+import 'pages/NewFingerCollect.dart';
+import 'package:my_flutter_app1/provider/fingetProvider.dart';
 
 void main() => runApp(MyApp());
 
@@ -16,8 +18,9 @@ class MyApp extends StatelessWidget {
   final routes = {
     '/Go': (context) => Go(),
     '/Search_result': (context) => SearchResult(),
-    '/collect': (context, {APMeta arguments}) =>
-        CollectFingerPrint(arguments: arguments),
+    // '/collect': (context, {APMeta arguments}) =>
+    //     CollectFingerPrint(arguments: arguments),
+    '/collect':(context,{APMeta arguments})=> NewFingerCollect(arguments: arguments),
     '/login': (context) => LoginPage(),
     '/tab': (context) => MyPage(),
     '/createLocationService': (context) => CreateLocationService(),
@@ -30,6 +33,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => MapProvider()), // 注册 provider
+          ChangeNotifierProvider(create: (_) => FingerProvider()),//注册fingerProvider
       ],
       child: MaterialApp(
         theme: ThemeData.light(),

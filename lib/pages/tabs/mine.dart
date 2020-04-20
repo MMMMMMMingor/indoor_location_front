@@ -47,7 +47,7 @@ class _MinePageState extends State<MinePage> {
   @override
   Widget build(BuildContext context) {
     var card = new SizedBox(
-        height: ScreenUtil().setHeight(900),
+        height: ScreenUtil().setHeight(950),
         child: new Card(
             child: new Column(children: <Widget>[
           new ListTile(

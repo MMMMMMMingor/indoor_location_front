@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:my_flutter_app1/model/location/LocationRequest.dart';
+import 'package:my_flutter_app1/model/location/LocationResult.dart';
 import 'package:quick_log/quick_log.dart';
 import 'package:my_flutter_app1/conf/Config.dart' as Config;
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
-typedef Callback = void Function(LocationRequest);
+typedef Callback = void Function(LocationResult);
 
 class WebSocketUtil {
   Logger log = Logger("WebSocketManager");
@@ -19,16 +19,20 @@ class WebSocketUtil {
   //与服务器建立连接
   void connectWithServer(String token, String metadataId) async {
     log.debug("正在跟服务器建立连接。。。");
-    log.debug(Config.WEBSOCKET_URL + metadataId);
+
     _metadataId = metadataId;
-    // var headers = {"Authorization" : "Bearer $token"};
-    // _websocket = WebsocketManager(Config.WEBSOCKET_URL + metadataId, headers);
+
     _client = StompClient(
         config: StompConfig(
-      url: 'ws://192.168.0.109:8080/api/location',
+      url: Config.WEBSOCKET_URL,
       onConnect: _onConnect,
-      stompConnectHeaders: {"Authorization": "Bearer $token"},
-      webSocketConnectHeaders: {"Authorization": "Bearer $token"},
+      stompConnectHeaders: {
+        "Authorization": "Bearer $token",
+        "metadataId": metadataId
+      },
+      webSocketConnectHeaders: {
+        "Authorization": "Bearer $token"
+      },
     ));
 
     _client.activate();
@@ -39,6 +43,10 @@ class WebSocketUtil {
         destination: '/service/result/' + _metadataId,
         callback: (StompFrame frame) {
           log.debug(frame.body);
+          LocationResult result = LocationResult.fromJson(jsonDecode(frame.body));
+          _callbacks.forEach((k, v) {
+            v(result);
+          });
         });
   }
 

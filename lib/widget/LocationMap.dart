@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_flutter_app1/provider/mapProvider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LocationMap extends StatelessWidget {
   @override
@@ -35,9 +36,16 @@ class LocationMap extends StatelessWidget {
 
             mapProvider.offset(xOffset, yOffset);
           },
-          onLongPress: () {
-            mapProvider.addTrace(10, 10);
-          },
+          // onLongPress: () {
+          //   mapProvider.addTrace(10, 10);
+          // },
+          // onLongPressEnd: (details){
+          //    RenderBox referenceBox = context.findRenderObject();
+          //    var pointPosition=referenceBox.globalToLocal(details.globalPosition);
+          // //  mapProvider.addTrace(pointPosition.dx, pointPosition.dy);
+          //   print(pointPosition.dx);
+          // },
+         
         ),
         CustomPaint(
           painter: new SignaturePainter(

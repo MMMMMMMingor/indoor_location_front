@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
     this._webSocketUtil.addListener(
       "indoorLocation",
       (value) {
-        // TODO 接收逻辑未实现1
+        Provider.of<MapProvider>(context, listen: false).addTrace(value.x, value.y);
       },
     );
 
