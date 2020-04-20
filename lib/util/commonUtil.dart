@@ -12,7 +12,7 @@ Future<String> getToken() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String token = prefs.getString("token");
 
-  return Future(() => token);
+  return token;
 }
 
 // 展示对话框

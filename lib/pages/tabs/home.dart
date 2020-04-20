@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:mqtt_client/mqtt_client.dart';
 import 'package:my_flutter_app1/model/location/AP.dart';
 import 'package:my_flutter_app1/model/location/APMeta.dart';
 import 'package:my_flutter_app1/model/location/LocationRequest.dart';
@@ -14,14 +12,12 @@ import 'package:my_flutter_app1/provider/mapProvider.dart';
 import 'package:my_flutter_app1/util/commonUtil.dart';
 import 'package:my_flutter_app1/util/data_collect/MessageHandler.dart';
 import 'package:my_flutter_app1/util/jsonUtil.dart';
+import 'package:my_flutter_app1/util/websocket_util.dart';
 import 'package:my_flutter_app1/widget/LocationMap.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:quick_log/quick_log.dart';
 import 'package:toast/toast.dart';
-import 'package:http/http.dart' as http;
-import 'package:my_flutter_app1/conf/Config.dart' as Config;
-import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:wifi_hunter/wifi_hunter.dart'; // ap数据采集所需插件
 
 class HomePage extends StatefulWidget {
@@ -32,11 +28,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Logger log = Logger("HomePageState");
   GlobalKey<FormState> searchKey = new GlobalKey<FormState>();
   String _search;
   Timer _timer;
-  MessageReceiver _receiver;
-  WiFiMessageSender _sender;
+  WebSocketUtil _webSocketUtil;
 
   _HomePageState();
 
@@ -62,66 +58,39 @@ class _HomePageState extends State<HomePage> {
   }
 
   // 定位服务
-  void _indoorLocationSerivce(
-      String sendTopic, String receiveTopic, List<AP> apList) async {
-    this._sender = new WiFiMessageSender(Config.MQTT_SERVER_IP, sendTopic,
-        qos: MqttQos.exactlyOnce);
-    this._receiver = new MessageReceiver(Config.MQTT_SERVER_IP);
-    this._receiver.connect();
-
+  void _indoorLocationSerivce(String metadataId, List<AP> apList) async {
+    this._webSocketUtil = new WebSocketUtil();
+    this._webSocketUtil.connectWithServer(await getToken(), metadataId);
     // 订阅数据
-    this._receiver.subscribe(
-      receiveTopic,
-      callOnData: (value) {
-        Toast.show(value, context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
-        var loactionResult = LocationResult.fromJson(jsonDecode(value));
-        print(loactionResult);
-        Provider.of<MapProvider>(context, listen: false)
-            .addTrace(loactionResult.x, loactionResult.y);
+    this._webSocketUtil.addListener(
+      "indoorLocation",
+      (value) {
+        // TODO 接收逻辑未实现1
       },
     );
 
     // 发送数据
     this._timer = Timer.periodic(Duration(seconds: 7), (timer) async {
-      print(timer.tick);
-      _sender.sendMessage(new LocationRequest(
-              intensities: await _scanAPs(apList), finish: false)
-          .toJson());
+      log.debug(timer.tick.toString());
+      _webSocketUtil.sendMessage(
+          new LocationRequest(intensities: await _scanAPs(apList)).toJson());
     });
   }
 
   // 向服务器请求定位服务资源
   void _startLocationRequest(APMeta apMeta) async {
     if (apMeta != null) {
-      // 获取本地token
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String token = prefs.getString("token");
-
-      // 获取用户信息
-      var response = await http.post(
-          Config.url + "api/location/service/${apMeta.metaId}",
-          headers: {"Authorization": "Bearer $token"});
-
-      var topics = LocationServiceTopicResponse.fromJson(
-          utf8JsonDecode(response.bodyBytes));
-
-      print(topics.toJson());
-
-      this._indoorLocationSerivce(
-          topics.sendTopic, topics.receiveTopic, apMeta.accessPoints);
+      this._indoorLocationSerivce(apMeta.metaId, apMeta.accessPoints);
     }
   }
 
   // 请求服务器关闭定位服务资源
   void _stopLocationRequest() async {
-    if (this._sender != null) {
-      _receiver.disconnect();
+    if (this._webSocketUtil != null) {
+      _webSocketUtil.removeListener("indoorLocation");
+      _webSocketUtil.disconnectWithServer();
+      _webSocketUtil = null;
       _timer.cancel();
-      await this
-          ._sender
-          .sendMessage(new LocationRequest(finish: true).toJson());
-      this._sender.disconnect();
     }
   }
 
@@ -130,7 +99,7 @@ class _HomePageState extends State<HomePage> {
     if (loginForm.validate()) {
       loginForm.save();
 
-      print(_search);
+      log.debug(_search);
       //由于没有和后端对接，点击之后直接返回
       Navigator.pop(context);
     }
@@ -160,6 +129,34 @@ class _HomePageState extends State<HomePage> {
     await PermissionHandler().requestPermissions([PermissionGroup.location]);
   }
 
+  FloatingActionButton _goButtun() {
+    if (_webSocketUtil == null) {
+      return FloatingActionButton(
+        child: Text("Go"),
+        onPressed: () async {
+          var value = await Navigator.pushNamed(context, '/Go');
+          if (value != null) {
+            Provider.of<MapProvider>(context, listen: false).clear();
+            for (var ap in (value as APMeta).accessPoints) {
+              Provider.of<MapProvider>(context, listen: false)
+                  .addAP(ap.x, ap.y);
+            }
+            this._startLocationRequest(value);
+          }
+        },
+      );
+    } else {
+      return FloatingActionButton(
+        child: Text("Stop"),
+        backgroundColor: Colors.red,
+        onPressed: () async {
+          _stopLocationRequest();
+          setState(() {});
+        },
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -170,27 +167,13 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     super.dispose();
-    _stopLocationRequest();
+    // _stopLocationRequest();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        child: Text("Go"),
-        onPressed: () async {
-          var value = await Navigator.pushNamed(context, '/Go');
-          _stopLocationRequest();
-          if (value != null) {
-            Provider.of<MapProvider>(context, listen: false).clear();
-            for (var ap in (value as APMeta).accessPoints) {
-              Provider.of<MapProvider>(context, listen: false)
-                  .addAP(ap.x, ap.y);
-            }
-            this._startLocationRequest(value);
-          }
-        },
-      ),
+      floatingActionButton: _goButtun(),
       resizeToAvoidBottomPadding: false,
       body: Stack(
         children: <Widget>[
